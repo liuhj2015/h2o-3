@@ -2,7 +2,7 @@
 
 def DEFAULT_NODE_LABEL = 'docker && !mr-0xc8'
 
-def executeTestStages = null
+def defineTestStages = null
 def buildConfig = null
 def pipelineEmailContent = null
 def emailContentHelpers = null
@@ -48,11 +48,11 @@ try {
           }
           setJobProperties(buildConfig, pipelineTriggers([cron(scheduleString)]))
 
-          // Load the executeTestStages script
-          executeTestStages = load('h2o-3/scripts/jenkins/groovy/executeTestStages.groovy')
+          // Load the defineTestStages script
+          defineTestStages = load('h2o-3/scripts/jenkins/groovy/defineTestStages.groovy')
         }
       }
-      executeTestStages(buildConfig)
+      defineTestStages(buildConfig)
       result = 'SUCCESS'
     }
   }
