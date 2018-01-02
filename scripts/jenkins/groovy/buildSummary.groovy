@@ -33,6 +33,20 @@ class BuildSummary {
         return stageSummaries
     }
 
+    String stageResultToBgColor(final String result) {
+        def BG_COLOR_SUCCESS = '#7fce67'
+        def BG_COLOR_FAILURE = '#d56060'
+        def BG_COLOR_OTHER = '#fbf78b'
+
+        if (result == buildSummary.RESULT_SUCCESS) {
+            return BG_COLOR_SUCCESS
+        }
+        if (result == buildSummary.RESULT_FAILURE) {
+            return BG_COLOR_FAILURE
+        }
+        return BG_COLOR_OTHER
+    }
+
     @Override
     String toString() {
         return "${stageSummaries}"

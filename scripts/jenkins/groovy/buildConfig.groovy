@@ -1,58 +1,5 @@
 class BuildConfig {
 
-  public static enum JenkinsMaster {
-    C1, // indicates we are running under mr-0xc1 master - master or nightly build
-    B4  // indicates we are running under mr-0xb4 master - PR build
-
-    private static JenkinsMaster findByName(final String name) {
-      switch(name.toLowerCase()) {
-        case 'c1':
-          return C1
-        case 'b4':
-          return B4
-        default:
-          throw new IllegalArgumentException(String.format("Master %s is unknown", name))
-      }
-    }
-
-    private static JenkinsMaster findByBuildURL(final String buildURL) {
-      final String name = buildURL.replaceAll('http://mr-0x', '').replaceAll(':8080.*', '')
-      return findByName(name)
-    }
-  }
-
-  public static enum NodeLabels {
-    LABELS_C1('docker && !mr-0xc8', 'mr-0xc9'),
-    LABELS_B4('docker', 'docker')
-
-    private String defaultNodeLabel
-    private String benchmarkNodeLabel
-
-    private NodeLabels(final String defaultNodeLabel, final String benchmarkNodeLabel) {
-      this.defaultNodeLabel = defaultNodeLabel
-      this.benchmarkNodeLabel = benchmarkNodeLabel
-    }
-
-    public String getDefaultNodeLabel() {
-      return defaultNodeLabel
-    }
-
-    public String getBenchmarkNodeLabel() {
-      return benchmarkNodeLabel
-    }
-
-    private static findByJenkinsMaster(final JenkinsMaster master) {
-      switch (master) {
-        case JenkinsMaster.C1:
-          return LABELS_C1
-        case JenkinsMaster.B4:
-          return LABELS_B4
-        default:
-          throw new IllegalArgumentException(String.format("Master %s is unknown", master))
-      }
-    }
-  }
-
   public static final String DOCKER_REGISTRY = 'docker.h2o.ai'
   public static final String PIPELINE_SCRIPTS_STASH_NAME = 'pipeline_scripts'
 
@@ -88,7 +35,6 @@ class BuildConfig {
   private String mode
   private String nodeLabel
   private String commitMessage
-  private buildSummary
   private boolean defaultOverrideRerun = false
   private String majorVersion
   private String buildVersion
@@ -102,11 +48,10 @@ class BuildConfig {
     (LANG_NONE): true
   ]
 
-  def initialize(final Script context, final String mode, final String commitMessage, final List<String> changes, final boolean overrideDetectionChange, final buildSummary) {
+  private BuildConfig(final Script context, final String mode, final String commitMessage, final List<String> changes, final boolean overrideDetectionChange) {
     this.mode = mode
     this.nodeLabel = nodeLabel
     this.commitMessage = commitMessage
-    this.buildSummary = buildSummary
     if (overrideDetectionChange) {
       markAllLangsForTest()
     } else {
@@ -209,7 +154,7 @@ class BuildConfig {
     }
   }
 
-  public void readVersion(final String versionFileContent) {
+  void readVersion(final String versionFileContent) {
     versionFileContent.split('\n').each{ line ->
       if (line.startsWith('Version: ')) {
         def versionString = line.replace('Version: ', '')
@@ -219,95 +164,69 @@ class BuildConfig {
     }
   }
 
-  public GString getGitHubCommitStateContext(final String stageName) {
+  GString getGitHubCommitStateContext(final String stageName) {
     return "${COMMIT_STATE_PREFIX} » ${stageName}"
   }
 
-  void addStageSummary(final context, final String stageName) {
-    buildSummary.addStageSummary(stageName)
-    updateJobDescription(context)
+  static class Factory {
+    static BuildConfig create(final Script context, final String mode, final String commitMessage, final List<String> changes, final boolean overrideDetectionChange) {
+      return new BuildConfig(context, mode, commitMessage, changes, overrideDetectionChange)
+    }
   }
 
-  void markStageSuccessful(final context, final String stageName) {
-    buildSummary.setStageResult(stageName, buildSummary.RESULT_SUCCESS)
-    updateJobDescription(context)
-  }
+  static enum JenkinsMaster {
+    C1, // indicates we are running under mr-0xc1 master - master or nightly build
+    B4  // indicates we are running under mr-0xb4 master - PR build
 
-  void markStageFailed(final context, final String stageName) {
-    buildSummary.setStageResult(stageName, buildSummary.RESULT_FAILURE)
-    updateJobDescription(context)
-  }
-
-  void setStageDetails(final context, final String stageName, final String nodeName, final String workspacePath) {
-    buildSummary.setStageDetails(stageName, nodeName, workspacePath)
-    updateJobDescription(context)
-  }
-
-  def getBuildSummary() {
-    return buildSummary
-  }
-
-  void updateJobDescription(final context) {
-
-    def stagesTable = ''
-    if (!buildSummary.getStageSummaries().isEmpty()) {
-      def stagesTableBody = ''
-      for (stageSummary in buildSummary.getStageSummaries()) {
-        def nodeName = stageSummary['nodeName'] == null ? 'Not yet allocated' : stageSummary['nodeName']
-        def result = stageSummary['result'] == null ? 'Pending' : stageSummary['result']
-        stagesTableBody += """
-          <tr style="background-color: ${stageResultToBgColor(stageSummary['result'])}">
-            <td style="border: 1px solid black; padding: 0.2em 1em">${stageSummary['stageName']}</td>
-            <td style="border: 1px solid black; padding: 0.2em 1em">${nodeName}</td>
-            <td style="border: 1px solid black; padding: 0.2em 1em">${stageSummary['workspacePath']}</td>
-            <td style="border: 1px solid black; padding: 0.2em 1em">${result.capitalize()}</td>
-          </tr>
-        """
+    private static JenkinsMaster findByName(final String name) {
+      switch(name.toLowerCase()) {
+        case 'c1':
+          return C1
+        case 'b4':
+          return B4
+        default:
+          throw new IllegalArgumentException(String.format("Master %s is unknown", name))
       }
-
-      stagesTable = """
-        <table style="margin-left: 1em; border-collapse: collapse">
-          <thead>
-            <tr>
-              <th style="border: 1px solid black; padding: 0.5em">Name</th>
-              <th style="border: 1px solid black; padding: 0.5em">Node</th>
-              <th style="border: 1px solid black; padding: 0.5em">Workspace</th>
-              <th style="border: 1px solid black; padding: 0.5em">Result</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${stagesTableBody}
-          </tbody>
-        </table>
-      """
     }
 
-    context.currentBuild.description = """
-      <div>
-        <h3>
-          Details
-        </h3>
-        <p style="margin-left: 1em"><strong>Commit Message:</strong> ${commitMessage}</p>
-        <p style="margin-left: 1em"><strong>SHA:</strong> ${context.env.GIT_SHA}</p>
-        ${stagesTable}  
-      </div>
-    """
+    private static JenkinsMaster findByBuildURL(final String buildURL) {
+      final String name = buildURL.replaceAll('http://mr-0x', '').replaceAll(':8080.*', '')
+      return findByName(name)
+    }
   }
 
-  private String stageResultToBgColor(final String result) {
-    def BG_COLOR_SUCCESS = '#7fce67'
-    def BG_COLOR_FAILURE = '#d56060'
-    def BG_COLOR_OTHER = '#fbf78b'
+  static enum NodeLabels {
+    LABELS_C1('docker && !mr-0xc8', 'mr-0xc9'),
+    LABELS_B4('docker', 'docker')
 
-    if (result == buildSummary.RESULT_SUCCESS) {
-      return BG_COLOR_SUCCESS
+    private String defaultNodeLabel
+    private String benchmarkNodeLabel
+
+    private NodeLabels(final String defaultNodeLabel, final String benchmarkNodeLabel) {
+      this.defaultNodeLabel = defaultNodeLabel
+      this.benchmarkNodeLabel = benchmarkNodeLabel
     }
-    if (result == buildSummary.RESULT_FAILURE) {
-      return BG_COLOR_FAILURE
+
+    public String getDefaultNodeLabel() {
+      return defaultNodeLabel
     }
-    return BG_COLOR_OTHER
+
+    public String getBenchmarkNodeLabel() {
+      return benchmarkNodeLabel
+    }
+
+    private static findByJenkinsMaster(final JenkinsMaster master) {
+      switch (master) {
+        case JenkinsMaster.C1:
+          return LABELS_C1
+        case JenkinsMaster.B4:
+          return LABELS_B4
+        default:
+          throw new IllegalArgumentException(String.format("Master %s is unknown", master))
+      }
+    }
   }
 
 }
 
-return new BuildConfig()
+return new BuildConfig.Factory()
