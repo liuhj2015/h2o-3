@@ -6,23 +6,14 @@ def call(buildConfig, stageConfig) {
   def stageNameToDirName = load('h2o-3/scripts/jenkins/groovy/stageNameToDirName.groovy')
   def insideDocker = load('h2o-3/scripts/jenkins/groovy/insideDocker.groovy')
 
-  def DATASETS_FILE = 'accuracy_datasets_docker.csv'
-  def TEST_CASES_FILE = "test_cases_${stageConfig.model}.csv"
-  def ML_BENCHMARK_ROOT = "${env.WORKSPACE}/${stageNameToDirName(stageConfig.stageName)}/h2o-3/ml-benchmark"
+  String DATASETS_FILE = 'accuracy_datasets_docker.csv'
+  GString TEST_CASES_FILE = "test_cases_${stageConfig.model}.csv"
+  GString ML_BENCHMARK_ROOT = "${env.WORKSPACE}/${stageNameToDirName(stageConfig.stageName)}/h2o-3/ml-benchmark"
 
-  if (stageConfig.datasetsPath == null) {
-    stageConfig.datasetsPath = "${ML_BENCHMARK_ROOT}/h2oR/${DATASETS_FILE}"
-  }
-  if (stageConfig.testCasesPath == null) {
-    stageConfig.testCasesPath = "${ML_BENCHMARK_ROOT}/h2oR/${TEST_CASES_FILE}"
-  }
-  if (stageConfig.makefilePath == null) {
-    stageConfig.makefilePath = "${ML_BENCHMARK_ROOT}/jenkins/Makefile.jenkins"
-  }
-
-  if (stageConfig.archiveAdditionalFiles == null) {
-    stageConfig.archiveAdditionalFiles = []
-  }
+  stageConfig.datasetsPath = stageConfig.datasetsPath ?: "${ML_BENCHMARK_ROOT}/h2oR/${DATASETS_FILE}"
+  stageConfig.testCasesPath = stageConfig.testCasesPath ?: "${ML_BENCHMARK_ROOT}/h2oR/${TEST_CASES_FILE}"
+  stageConfig.makefilePath = stageConfig.makefilePath ?: "${ML_BENCHMARK_ROOT}/jenkins/Makefile.jenkins"
+  stageConfig.archiveAdditionalFiles = stageConfig.archiveAdditionalFiles ?: []
 
   dir (ML_BENCHMARK_ROOT) {
     checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: H2O_OPS_CREDS_ID, url: 'https://github.com/h2oai/ml-benchmark']]]

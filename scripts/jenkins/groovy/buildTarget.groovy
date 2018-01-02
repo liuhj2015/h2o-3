@@ -1,8 +1,13 @@
 def call(body) {
   def config = [:]
+
   body.resolveStrategy = Closure.DELEGATE_FIRST
   body.delegate = config
   body()
+
+  config.archiveFiles = config.archiveFiles ?: true
+  config.hasJUnit = config.hasJUnit ?: true
+  config.h2o3dir = config.h2o3dir ?: 'h2o-3'
 
   def FILES_TO_ARCHIVE = [
     "**/*.log", "**/out.*", "**/*py.out.txt", "**/java*out.txt", "**/*ipynb.out.txt",
@@ -12,24 +17,12 @@ def call(body) {
     "**/*.code", "**/package_version_check_out.txt"
   ]
 
-  if (config.archiveFiles == null) {
-    config.archiveFiles = true
-  }
-
-  if (config.hasJUnit == null) {
-    config.hasJUnit = true
-  }
-
-  if (config.h2o3dir == null) {
-    config.h2o3dir = 'h2o-3'
-  }
-
   try {
     execMake(config.makefilePath, config.target, config.h2o3dir)
   } finally {
     if (config.hasJUnit) {
-      def findCmd = "find ${config.h2o3dir} -type f -name '*.xml'"
-      def replaceCmd = "${findCmd} -exec sed -i 's/&#[0-9]\\+;//g' {} +"
+      GString findCmd = "find ${config.h2o3dir} -type f -name '*.xml'"
+      GString replaceCmd = "${findCmd} -exec sed -i 's/&#[0-9]\\+;//g' {} +"
       echo "Post-processing following test result files:"
       sh findCmd
       sh replaceCmd

@@ -241,37 +241,20 @@ def invokeStage(buildConfig, body) {
   def DEFAULT_EXECUTION_SCRIPT = 'h2o-3/scripts/jenkins/groovy/defaultStage.groovy'
 
   def config = [:]
+
   body.resolveStrategy = Closure.DELEGATE_FIRST
   body.delegate = config
   body()
 
-  if (config.pythonVersion == null) {
-    config.pythonVersion = DEFAULT_PYTHON
-  }
-  if (config.rVersion == null) {
-    config.rVersion = DEFAULT_R
-  }
-  if (config.timeoutValue == null) {
-    config.timeoutValue = DEFAULT_TIMEOUT
-  }
-  if (config.hasJUnit == null) {
-    config.hasJUnit = true
-  }
-  if (config.additionalTestPackages == null) {
-    config.additionalTestPackages = []
-  }
-  if (config.nodeLabel == null) {
-    config.nodeLabel = buildConfig.getDefaultNodeLabel()
-  }
-  if (config.executionScript == null) {
-    config.executionScript = DEFAULT_EXECUTION_SCRIPT
-  }
-  if (config.image == null) {
-    config.image = buildConfig.DEFAULT_IMAGE
-  }
-  if (config.makefilePath == null) {
-    config.makefilePath = buildConfig.MAKEFILE_PATH
-  }
+  config.pythonVersion = config.pythonVersion ?: DEFAULT_PYTHON
+  config.rVersion = config.rVersion ?: DEFAULT_R
+  config.timeoutValue = config.timeoutValue ?: DEFAULT_TIMEOUT
+  config.hasJUnit = config.hasJUnit ?: true
+  config.additionalTestPackages = config.additionalTestPackages ?: []
+  config.nodeLabel = config.nodeLabel ?: buildConfig.getDefaultNodeLabel()
+  config.executionScript = config.executionScript ?: DEFAULT_EXECUTION_SCRIPT
+  config.image = config.image ?: buildConfig.DEFAULT_IMAGE
+  config.makefilePath = config.makefilePath ?: buildConfig.MAKEFILE_PATH
 
   buildConfig.addStageSummary(this, config.stageName)
   withCustomCommitStates(scm, 'h2o-ops-personal-auth-token', "${buildConfig.getGitHubCommitStateContext(config.stageName)}") {
