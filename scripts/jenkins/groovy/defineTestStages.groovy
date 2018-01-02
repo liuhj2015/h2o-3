@@ -117,16 +117,6 @@ def call(final pipelineContext) {
     ]
   ]
 
-  // Stages for PRs in testing phase, executed after each push to PR.
-  def PR_TESTING_STAGES = PR_STAGES.findAll{k ->
-    // get all stages shorter than 45 minutes and exclude JS stages
-    (k['timeoutValue'] <= 45 && k['lang'] != pipelineContext.getBuildConfig().LANG_JS) ||
-      // include R Small and Medium-large regardless of previous conditions
-      (k['stageName'] == 'R3.4 Medium-large' || k['stageName'] == 'R3.4 Small') ||
-        // include JUnit
-        (k['lang'] == pipelineContext.getBuildConfig().LANG_JAVA)
-  }
-
   def BENCHMARK_STAGES = [
     [
       stageName: 'GBM Benchmark', executionScript: 'h2o-3/scripts/jenkins/groovy/benchmarkStage.groovy',
@@ -156,7 +146,7 @@ def call(final pipelineContext) {
     ],
     [
       stageName: 'PhantomJS Medium', target: 'test-phantom-js-medium',
-      timeoutValue: 75, lang: buildConfig.LANG_JS
+      timeoutValue: 75, lang: pipelineContext.getBuildConfig().LANG_JS
     ]
   ]
   MASTER_STAGES += BENCHMARK_STAGES
@@ -185,11 +175,11 @@ def call(final pipelineContext) {
     ]
   ]
 
-  def modeCode = MODES.find{it['name'] == buildConfig.getMode()}['code']
+  def modeCode = MODES.find{it['name'] == pipelineContext.getBuildConfig().getMode()}['code']
   if (modeCode == MODE_BENCHMARK_CODE) {
-    executeInParallel(BENCHMARK_STAGES, buildConfig)
+    executeInParallel(BENCHMARK_STAGES, pipelineContext)
   } else {
-    executeInParallel(SMOKE_STAGES, buildConfig)
+    executeInParallel(SMOKE_STAGES, pipelineContext)
     def jobs = PR_STAGES
     if (modeCode >= MODE_MASTER_CODE) {
       jobs += MASTER_STAGES
@@ -197,7 +187,7 @@ def call(final pipelineContext) {
     if (modeCode >= MODE_NIGHTLY_CODE) {
       jobs += NIGHTLY_STAGES
     }
-    executeInParallel(jobs, buildConfig)
+    executeInParallel(jobs, pipelineContext)
   }
 }
 
