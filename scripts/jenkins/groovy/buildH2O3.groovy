@@ -11,7 +11,7 @@ def call(final pipelineContext) {
   def stageName = 'Build H2O-3'
   
   withCustomCommitStates(scm, pipelineContext.getBuildConfig().H2O_OPS_TOKEN, "${pipelineContext.getBuildConfig().getGitHubCommitStateContext(stageName)}") {
-    pipelineContext.getBuildSummary().addStageSummary(this, stageName)
+    pipelineContext.getBuildSummary().addStageSummary(this, stageName, 'h2o-3')
     pipelineContext.getBuildSummary().setStageDetails(this, stageName, env.NODE_NAME, env.WORKSPACE)
     try {
       // Launch docker container, build h2o-3, create test packages and archive artifacts

@@ -120,9 +120,9 @@ def call(final pipelineContext) {
   def BENCHMARK_STAGES = [
     [
       stageName: 'GBM Benchmark', executionScript: 'h2o-3/scripts/jenkins/groovy/benchmarkStage.groovy',
-      timeoutValue: 120, target: 'benchmark', lang: buildConfig.LANG_NONE,
-      additionalTestPackages: [buildConfig.LANG_R], image: buildConfig.BENCHMARK_IMAGE,
-      nodeLabel: pipelineContext.getBuildConfig().getBenchmarkNodeLabel(), model: 'gbm', makefilePath: buildConfig.BENCHMARK_MAKEFILE_PATH
+      timeoutValue: 120, target: 'benchmark', lang: pipelineContext.getBuildConfig().LANG_NONE,
+      additionalTestPackages: [pipelineContext.getBuildConfig().LANG_R], image: pipelineContext.getBuildConfig().BENCHMARK_IMAGE,
+      nodeLabel: pipelineContext.getBuildConfig().getBenchmarkNodeLabel(), model: 'gbm', makefilePath: pipelineContext.getBuildConfig().BENCHMARK_MAKEFILE_PATH
     ]
   ]
 
@@ -237,28 +237,25 @@ def invokeStage(final pipelineContext, final body) {
   config.executionScript = config.executionScript ?: DEFAULT_EXECUTION_SCRIPT
   config.image = config.image ?: pipelineContext.getBuildConfig().DEFAULT_IMAGE
   config.makefilePath = config.makefilePath ?: pipelineContext.getBuildConfig().MAKEFILE_PATH
+  config.stageDir = config.stageDir ?: pipelineContext.getUtils().stageNameToDirName(config.stageName)
 
-  pipelineContext.getBuildSummary().addStageSummary(this, config.stageName)
+  pipelineContext.getBuildSummary().addStageSummary(this, config.stageName, config.stageDir)
   withCustomCommitStates(scm, 'h2o-ops-personal-auth-token', "${pipelineContext.getBuildConfig().getGitHubCommitStateContext(config.stageName)}") {
-    try {
       node(config.nodeLabel) {
+        try {
         pipelineContext.getBuildSummary().setStageDetails(this, config.stageName, env.NODE_NAME, env.WORKSPACE)
         echo "###### Unstash scripts. ######"
         unstash name: pipelineContext.getBuildConfig().PIPELINE_SCRIPTS_STASH_NAME
 
-        if (config.stageDir == null) {
-          def stageNameToDirName = load('h2o-3/scripts/jenkins/groovy/stageNameToDirName.groovy')
-          config.stageDir = stageNameToDirName(config.stageName)
-        }
         sh "rm -rf ${config.stageDir}"
 
         def script = load(config.executionScript)
         script(pipelineContext, config)
+        pipelineContext.getBuildSummary().markStageSuccessful(this, config.stageName)
+      } catch (Exception e) {
+        pipelineContext.getBuildSummary().markStageFailed(this, config.stageName)
+        throw e
       }
-      pipelineContext.getBuildSummary().markStageSuccessful(this, config.stageName)
-    } catch (Exception e) {
-      pipelineContext.getBuildSummary().markStageFailed(this, config.stageName)
-      throw e
     }
   }
 }

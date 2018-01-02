@@ -3,12 +3,11 @@ def call(final pipelineContext, final stageConfig) {
   def H2O_OPS_CREDS_ID = 'd57016f6-d172-43ea-bea1-1d6c7c1747a0'
 
   def defaultStage = load('h2o-3/scripts/jenkins/groovy/defaultStage.groovy')
-  def stageNameToDirName = load('h2o-3/scripts/jenkins/groovy/stageNameToDirName.groovy')
   def insideDocker = load('h2o-3/scripts/jenkins/groovy/insideDocker.groovy')
 
   String DATASETS_FILE = 'accuracy_datasets_docker.csv'
   GString TEST_CASES_FILE = "test_cases_${stageConfig.model}.csv"
-  GString ML_BENCHMARK_ROOT = "${env.WORKSPACE}/${stageNameToDirName(stageConfig.stageName)}/h2o-3/ml-benchmark"
+  GString ML_BENCHMARK_ROOT = "${env.WORKSPACE}/${pipelineContext.getUtils().stageNameToDirName(stageConfig.stageName)}/h2o-3/ml-benchmark"
 
   stageConfig.datasetsPath = stageConfig.datasetsPath ?: "${ML_BENCHMARK_ROOT}/h2oR/${DATASETS_FILE}"
   stageConfig.testCasesPath = stageConfig.testCasesPath ?: "${ML_BENCHMARK_ROOT}/h2oR/${TEST_CASES_FILE}"
@@ -22,7 +21,7 @@ def call(final pipelineContext, final stageConfig) {
 
   def prepareBenchmarkDirStruct = load("${ML_BENCHMARK_ROOT}/jenkins/groovy/prepareBenchmarkDirStruct.groovy")
   def benchmarkFolderConfig = prepareBenchmarkDirStruct(stageConfig.model, env.GIT_SHA, env.BRANCH_NAME)
-  GString outputPath = "${env.workspace}/${stageNameToDirName(stageConfig.stageName)}/${benchmarkFolderConfig.getOutputDir()}"
+  GString outputPath = "${env.workspace}/${pipelineContext.getUtils().stageNameToDirName(stageConfig.stageName)}/${benchmarkFolderConfig.getOutputDir()}"
   sh "rm -rf ${outputPath} && mkdir -p ${outputPath}"
 
   def benchmarkEnv = [
@@ -42,7 +41,7 @@ def call(final pipelineContext, final stageConfig) {
   } finally {
     insideDocker(benchmarkEnv, stageConfig.image, pipelineContext.getBuildConfig().DOCKER_REGISTRY, 5, 'MINUTES') {
       def persistBenchmarkResults = load("${ML_BENCHMARK_ROOT}/jenkins/groovy/persistBenchmarkResults.groovy")
-      persistBenchmarkResults(benchmarkFolderConfig, stageNameToDirName(stageConfig.stageName))
+      persistBenchmarkResults(benchmarkFolderConfig, pipelineContext.getUtils().stageNameToDirName(stageConfig.stageName))
     }
   }
 
