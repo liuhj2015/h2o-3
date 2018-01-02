@@ -1,11 +1,11 @@
-def call(buildConfig, stageConfig) {
+def call(final pipelineContext, final stageConfig) {
   def insideDocker = load('h2o-3/scripts/jenkins/groovy/insideDocker.groovy')
   def buildTarget = load('h2o-3/scripts/jenkins/groovy/buildTarget.groovy')
   def customEnv = load('h2o-3/scripts/jenkins/groovy/customEnv.groovy')
 
   def buildEnv = customEnv() + ["PYTHON_VERSION=${stageConfig.pythonVersion}", "R_VERSION=${stageConfig.rVersion}"]
 
-  insideDocker(buildEnv, stageConfig.image, buildConfig.DOCKER_REGISTRY, stageConfig.timeoutValue, 'MINUTES') {
+  insideDocker(buildEnv, stageConfig.image, pipelineContext.getBuildConfig().DOCKER_REGISTRY, stageConfig.timeoutValue, 'MINUTES') {
     // NOTES regarding changes detection and rerun:
     // An empty stage is a stage which is created, but does not execute any tests.
     // Consider following scenario:
@@ -23,17 +23,17 @@ def call(buildConfig, stageConfig) {
     // skipped due to the rerun (and it shouldn't be run in this build either).
 
     // run stage only if there is something changed for this or relevant lang.
-    if (buildConfig.langChanged(stageConfig.lang)) {
+    if (pipelineContext.getBuildConfig().langChanged(stageConfig.lang)) {
       echo "###### Changes for ${stageConfig.lang} detected, starting ${stageConfig.stageName} ######"
       stage(stageConfig.stageName) {
         // run tests only if all stages should be run or if this stage was FAILED in previous build
-        if (runAllStages(buildConfig) || !wasStageSuccessful(stageConfig.stageName)) {
+        if (runAllStages(pipelineContext) || !wasStageSuccessful(stageConfig.stageName)) {
           echo "###### ${stageConfig.stageName} was not successful or was not executed in previous build, executing it now. ######"
 
           def h2oFolder = stageConfig.stageDir + '/h2o-3'
 
           // pull the test package unless this is a LANG_NONE stage
-          if (stageConfig.lang != buildConfig.LANG_NONE) {
+          if (stageConfig.lang != pipelineContext.getBuildConfig().LANG_NONE) {
             unpackTestPackage(stageConfig.lang, stageConfig.stageDir)
           }
           // pull aditional test packages
@@ -42,11 +42,11 @@ def call(buildConfig, stageConfig) {
             unpackTestPackage(additionalPackage, stageConfig.stageDir)
           }
 
-          if (stageConfig.lang == buildConfig.LANG_PY || stageConfig.additionalTestPackages.contains(buildConfig.LANG_PY)) {
+          if (stageConfig.lang == pipelineContext.getBuildConfig().LANG_PY || stageConfig.additionalTestPackages.contains(pipelineContext.getBuildConfig().LANG_PY)) {
             installPythonPackage(h2oFolder)
           }
 
-          if (stageConfig.lang == buildConfig.LANG_R || stageConfig.additionalTestPackages.contains(buildConfig.LANG_R)) {
+          if (stageConfig.lang == pipelineContext.getBuildConfig().LANG_R || stageConfig.additionalTestPackages.contains(pipelineContext.getBuildConfig().LANG_R)) {
             installRPackage(h2oFolder)
           }
 
@@ -95,10 +95,10 @@ def unpackTestPackage(lang, String stageDir) {
   sh "cd ${stageDir}/h2o-3 && unzip -q -o test-package-${lang}.zip && rm test-package-${lang}.zip"
 }
 
-def runAllStages(buildConfig) {
+def runAllStages(final pipelineContext) {
     // first check the commit message contains !rerun token, if yes, then don't run all stages,
     // if not, then run all stages
-    def result = !buildConfig.commitMessageContains('!rerun')
+    def result = !pipelineContext.getBuildConfig().commitMessageContains('!rerun')
     // if we shouldn't run all stages based on the commit message, check
     // that this is not overridden by environment
     if (!result) {

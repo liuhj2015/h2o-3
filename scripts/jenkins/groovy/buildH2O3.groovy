@@ -1,4 +1,4 @@
-def call(buildConfig) {
+def call(final pipelineContext) {
 
   def PYTHON_VERSION = '3.5'
   def R_VERSION = '3.4.1'
@@ -10,52 +10,52 @@ def call(buildConfig) {
 
   def stageName = 'Build H2O-3'
   
-  withCustomCommitStates(scm, buildConfig.H2O_OPS_TOKEN, "${buildConfig.getGitHubCommitStateContext(stageName)}") {
-    buildConfig.addStageSummary(this, stageName)
-    buildConfig.setStageDetails(this, stageName, env.NODE_NAME, env.WORKSPACE)
+  withCustomCommitStates(scm, pipelineContext.getBuildConfig().H2O_OPS_TOKEN, "${pipelineContext.getBuildConfig().getGitHubCommitStateContext(stageName)}") {
+    pipelineContext.getBuildSummary().addStageSummary(this, stageName)
+    pipelineContext.getBuildSummary().setStageDetails(this, stageName, env.NODE_NAME, env.WORKSPACE)
     try {
       // Launch docker container, build h2o-3, create test packages and archive artifacts
       def buildEnv = customEnv() + "PYTHON_VERSION=${PYTHON_VERSION}" + "R_VERSION=${R_VERSION}"
-      insideDocker(buildEnv, buildConfig.DEFAULT_IMAGE, buildConfig.DOCKER_REGISTRY, 30, 'MINUTES') {
+      insideDocker(buildEnv, pipelineContext.getBuildConfig().DEFAULT_IMAGE, pipelineContext.getBuildConfig().DOCKER_REGISTRY, 30, 'MINUTES') {
         stage(stageName) {
           try {
             buildTarget {
               target = 'build-h2o-3'
               hasJUnit = false
               archiveFiles = false
-              makefilePath = buildConfig.MAKEFILE_PATH
+              makefilePath = pipelineContext.getBuildConfig().MAKEFILE_PATH
             }
             buildTarget {
               target = 'test-package-py'
               hasJUnit = false
               archiveFiles = false
-              makefilePath = buildConfig.MAKEFILE_PATH
+              makefilePath = pipelineContext.getBuildConfig().MAKEFILE_PATH
             }
             buildTarget {
               target = 'test-package-r'
               hasJUnit = false
               archiveFiles = false
-              makefilePath = buildConfig.MAKEFILE_PATH
+              makefilePath = pipelineContext.getBuildConfig().MAKEFILE_PATH
             }
-            if (buildConfig.langChanged(buildConfig.LANG_JS)) {
+            if (pipelineContext.getBuildConfig().langChanged(pipelineContext.getBuildConfig().LANG_JS)) {
               buildTarget {
                 target = 'test-package-js'
                 hasJUnit = false
                 archiveFiles = false
-                makefilePath = buildConfig.MAKEFILE_PATH
+                makefilePath = pipelineContext.getBuildConfig().MAKEFILE_PATH
               }
             }
-            if (buildConfig.langChanged(buildConfig.LANG_JAVA)) {
+            if (pipelineContext.getBuildConfig().langChanged(pipelineContext.getBuildConfig().LANG_JAVA)) {
               buildTarget {
                 target = 'test-package-java'
                 hasJUnit = false
                 archiveFiles = false
-                makefilePath = buildConfig.MAKEFILE_PATH
+                makefilePath = pipelineContext.getBuildConfig().MAKEFILE_PATH
               }
             }
           } finally {
             archiveArtifacts """
-          h2o-3/${buildConfig.MAKEFILE_PATH},
+          h2o-3/${pipelineContext.getBuildConfig().MAKEFILE_PATH},
           h2o-3/h2o-py/dist/*.whl,
           h2o-3/build/h2o.jar,
           h2o-3/h2o-3/src/contrib/h2o_*.tar.gz,
@@ -66,10 +66,9 @@ def call(buildConfig) {
           }
         }
       }
-      buildConfig.markStageSuccessful(this, stageName)
-      echo "************************${buildConfig.getBuildSummary()}***************************"
+      pipelineContext.getBuildSummary().markStageSuccessful(this, stageName)
     } catch (Exception e) {
-      buildConfig.markStageFailed(this, stageName)
+      pipelineContext.getBuildSummary().markStageFailed(this, stageName)
       throw e
     }
   }

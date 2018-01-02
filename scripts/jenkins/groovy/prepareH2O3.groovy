@@ -14,20 +14,18 @@ def call(final scmEnv, final String mode, final boolean overrideDetectionChange)
   env.GIT_SHA = scmEnv['GIT_COMMIT']
   env.GIT_DATE = "${sh(script: 'cd h2o-3 && git show -s --format=%ci', returnStdout: true).trim()}"
 
-  // load buildConfig script and initialize the object
   def getChanges = load('h2o-3/scripts/jenkins/groovy/getChanges.groovy')
   def pipelineContextFactory = load('h2o-3/scripts/jenkins/groovy/pipelineContext.groovy')
-  pipelineContextFactory.create(this, 'h2o-3/scripts/jenkins/groovy', mode, commitMessage, getChanges('h2o-3'), overrideDetectionChange)
-  error 'NYI'
+  def final pipelineContext = pipelineContextFactory.create(this, 'h2o-3/scripts/jenkins/groovy', mode, commitMessage, getChanges('h2o-3'), overrideDetectionChange)
 
   // Archive scripts so we don't have to do additional checkouts when changing node
-  stash name: buildConfig.PIPELINE_SCRIPTS_STASH_NAME, includes: 'h2o-3/scripts/jenkins/groovy/*', allowEmpty: false
+  stash name: pipelineContext.getBuildConfig().PIPELINE_SCRIPTS_STASH_NAME, includes: 'h2o-3/scripts/jenkins/groovy/*', allowEmpty: false
 
   // Load build script and execute it
   def buildH2O3 = load('h2o-3/scripts/jenkins/groovy/buildH2O3.groovy')
-  buildH2O3(buildConfig)
-  buildConfig.readVersion(readFile('h2o-3/h2o-3-DESCRIPTION'))
-  return buildConfig
+  buildH2O3(pipelineContext)
+  pipelineContext.getBuildConfig().readVersion(readFile('h2o-3/h2o-3-DESCRIPTION'))
+  return pipelineContext
 }
 
 return this

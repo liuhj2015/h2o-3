@@ -1,4 +1,4 @@
-def call(buildConfig, stageConfig) {
+def call(final pipelineContext, final stageConfig) {
 
   def H2O_OPS_CREDS_ID = 'd57016f6-d172-43ea-bea1-1d6c7c1747a0'
 
@@ -37,17 +37,17 @@ def call(buildConfig, stageConfig) {
 
   try {
     withEnv(benchmarkEnv) {
-      defaultStage(buildConfig, stageConfig)
+      defaultStage(pipelineContext, stageConfig)
     }
   } finally {
-    insideDocker(benchmarkEnv, stageConfig.image, buildConfig.DOCKER_REGISTRY, 5, 'MINUTES') {
+    insideDocker(benchmarkEnv, stageConfig.image, pipelineContext.getBuildConfig().DOCKER_REGISTRY, 5, 'MINUTES') {
       def persistBenchmarkResults = load("${ML_BENCHMARK_ROOT}/jenkins/groovy/persistBenchmarkResults.groovy")
       persistBenchmarkResults(benchmarkFolderConfig, stageNameToDirName(stageConfig.stageName))
     }
   }
 
   def compareBenchmarksStage = load("h2o-3/scripts/jenkins/groovy/compareBenchmarksStage.groovy")
-  compareBenchmarksStage(buildConfig, stageConfig, benchmarkFolderConfig)
+  compareBenchmarksStage(pipelineContext.getBuildConfig(), stageConfig, benchmarkFolderConfig)
 }
 
 return this

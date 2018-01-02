@@ -1,4 +1,4 @@
-def call(buildConfig) {
+def call(final pipelineContext) {
 
   def MODE_PR_TESTING_CODE = -1
   def MODE_PR_CODE = 0
@@ -17,19 +17,19 @@ def call(buildConfig) {
   def SMOKE_STAGES = [
     [
       stageName: 'Py2.7 Smoke', target: 'test-py-smoke', pythonVersion: '2.7',
-      timeoutValue: 8, lang: buildConfig.LANG_PY
+      timeoutValue: 8, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'R3.4 Smoke', target: 'test-r-smoke', rVersion: '3.4.1',
-      timeoutValue: 8, lang: buildConfig.LANG_R
+      timeoutValue: 8, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'PhantomJS Smoke', target: 'test-phantom-js-smoke',
-      timeoutValue: 20, lang: buildConfig.LANG_JS
+      timeoutValue: 20, lang: pipelineContext.getBuildConfig().LANG_JS
     ],
     [
       stageName: 'Java8 Smoke', target: 'test-junit-smoke',
-      timeoutValue: 20, lang: buildConfig.LANG_JAVA
+      timeoutValue: 20, lang: pipelineContext.getBuildConfig().LANG_JAVA
     ]
   ]
 
@@ -37,94 +37,94 @@ def call(buildConfig) {
   def PR_STAGES = [
     [
       stageName: 'Py2.7 Booklets', target: 'test-py-booklets', pythonVersion: '2.7',
-      timeoutValue: 40, lang: buildConfig.LANG_PY
+      timeoutValue: 40, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'Py2.7 Demos', target: 'test-py-demos', pythonVersion: '2.7',
-      timeoutValue: 30, lang: buildConfig.LANG_PY
+      timeoutValue: 30, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'Py2.7 Init', target: 'test-py-init', pythonVersion: '2.7',
-      timeoutValue: 5, hasJUnit: false, lang: buildConfig.LANG_PY
+      timeoutValue: 5, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'Py2.7 Small', target: 'test-pyunit-small', pythonVersion: '2.7',
-      timeoutValue: 90, lang: buildConfig.LANG_PY
+      timeoutValue: 90, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'Py3.5 Small', target: 'test-pyunit-small', pythonVersion: '3.5',
-      timeoutValue: 90, lang: buildConfig.LANG_PY
+      timeoutValue: 90, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'Py3.6 Small', target: 'test-pyunit-small', pythonVersion: '3.6',
-      timeoutValue: 90, lang: buildConfig.LANG_PY
+      timeoutValue: 90, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'R3.4 Init', target: 'test-r-init', rVersion: '3.4.1',
-      timeoutValue: 5, hasJUnit: false, lang: buildConfig.LANG_R
+      timeoutValue: 5, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.4 Small', target: 'test-r-small', rVersion: '3.4.1',
-      timeoutValue: 110, lang: buildConfig.LANG_R
+      timeoutValue: 110, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.4 Small Client Mode', target: 'test-r-small-client-mode', rVersion: '3.4.1',
-      timeoutValue: 140, lang: buildConfig.LANG_R
+      timeoutValue: 140, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.4 CMD Check', target: 'test-r-cmd-check', rVersion: '3.4.1',
-      timeoutValue: 15, hasJUnit: false, lang: buildConfig.LANG_R
+      timeoutValue: 15, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.4 CMD Check as CRAN', target: 'test-r-cmd-check-as-cran', rVersion: '3.4.1',
-      timeoutValue: 10, hasJUnit: false, lang: buildConfig.LANG_R
+      timeoutValue: 10, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.4 Booklets', target: 'test-r-booklets', rVersion: '3.4.1',
-      timeoutValue: 50, lang: buildConfig.LANG_R
+      timeoutValue: 50, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.4 Demos Small', target: 'test-r-demos-small', rVersion: '3.4.1',
-      timeoutValue: 15, lang: buildConfig.LANG_R
+      timeoutValue: 15, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'PhantomJS', target: 'test-phantom-js',
-      timeoutValue: 75, lang: buildConfig.LANG_JS
+      timeoutValue: 75, lang: pipelineContext.getBuildConfig().LANG_JS
     ],
     [
       stageName: 'Py3.6 Medium-large', target: 'test-pyunit-medium-large', pythonVersion: '3.5',
-      timeoutValue: 120, lang: buildConfig.LANG_PY
+      timeoutValue: 120, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'R3.4 Medium-large', target: 'test-r-medium-large', rVersion: '3.4.1',
-      timeoutValue: 70, lang: buildConfig.LANG_R
+      timeoutValue: 70, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.4 Demos Medium-large', target: 'test-r-demos-medium-large', rVersion: '3.4.1',
-      timeoutValue: 120, lang: buildConfig.LANG_R
+      timeoutValue: 120, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'INFO Check', target: 'test-info',
-      timeoutValue: 10, lang: buildConfig.LANG_NONE, additionalTestPackages: [buildConfig.LANG_R]
+      timeoutValue: 10, lang: pipelineContext.getBuildConfig().LANG_NONE, additionalTestPackages: [pipelineContext.getBuildConfig().LANG_R]
     ],
     [
       stageName: 'Py3.6 Test Demos', target: 'test-demos', pythonVersion: '3.6',
-      timeoutValue: 10, lang: buildConfig.LANG_PY
+      timeoutValue: 10, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'Java 8 JUnit', target: 'test-junit-jenkins', pythonVersion: '2.7',
-      timeoutValue: 90, lang: buildConfig.LANG_JAVA, additionalTestPackages: [buildConfig.LANG_PY]
+      timeoutValue: 90, lang: pipelineContext.getBuildConfig().LANG_JAVA, additionalTestPackages: [pipelineContext.getBuildConfig().LANG_PY]
     ]
   ]
 
   // Stages for PRs in testing phase, executed after each push to PR.
   def PR_TESTING_STAGES = PR_STAGES.findAll{k ->
     // get all stages shorter than 45 minutes and exclude JS stages
-    (k['timeoutValue'] <= 45 && k['lang'] != buildConfig.LANG_JS) ||
+    (k['timeoutValue'] <= 45 && k['lang'] != pipelineContext.getBuildConfig().LANG_JS) ||
       // include R Small and Medium-large regardless of previous conditions
       (k['stageName'] == 'R3.4 Medium-large' || k['stageName'] == 'R3.4 Small') ||
         // include JUnit
-        (k['lang'] == buildConfig.LANG_JAVA)
+        (k['lang'] == pipelineContext.getBuildConfig().LANG_JAVA)
   }
 
   def BENCHMARK_STAGES = [
@@ -132,7 +132,7 @@ def call(buildConfig) {
       stageName: 'GBM Benchmark', executionScript: 'h2o-3/scripts/jenkins/groovy/benchmarkStage.groovy',
       timeoutValue: 120, target: 'benchmark', lang: buildConfig.LANG_NONE,
       additionalTestPackages: [buildConfig.LANG_R], image: buildConfig.BENCHMARK_IMAGE,
-      nodeLabel: buildConfig.getBenchmarkNodeLabel(), model: 'gbm', makefilePath: buildConfig.BENCHMARK_MAKEFILE_PATH
+      nodeLabel: pipelineContext.getBuildConfig().getBenchmarkNodeLabel(), model: 'gbm', makefilePath: buildConfig.BENCHMARK_MAKEFILE_PATH
     ]
   ]
 
@@ -140,19 +140,19 @@ def call(buildConfig) {
   def MASTER_STAGES = [
     [
       stageName: 'Py2.7 Medium-large', target: 'test-pyunit-medium-large', pythonVersion: '2.7',
-      timeoutValue: 120, lang: buildConfig.LANG_PY
+      timeoutValue: 120, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'Py3.5 Medium-large', target: 'test-pyunit-medium-large', pythonVersion: '3.5',
-      timeoutValue: 120, lang: buildConfig.LANG_PY
+      timeoutValue: 120, lang: pipelineContext.getBuildConfig().LANG_PY
     ],
     [
       stageName: 'R3.4 Datatable', target: 'test-r-datatable', rVersion: '3.4.1',
-      timeoutValue: 40, lang: buildConfig.LANG_R
+      timeoutValue: 40, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'PhantomJS Small', target: 'test-phantom-js-small',
-      timeoutValue: 75, lang: buildConfig.LANG_JS
+      timeoutValue: 75, lang: pipelineContext.getBuildConfig().LANG_JS
     ],
     [
       stageName: 'PhantomJS Medium', target: 'test-phantom-js-medium',
@@ -165,55 +165,47 @@ def call(buildConfig) {
   def NIGHTLY_STAGES = [
     [
       stageName: 'R3.3 Medium-large', target: 'test-r-medium-large', rVersion: '3.3.3',
-      timeoutValue: 70, lang: buildConfig.LANG_R
+      timeoutValue: 70, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.3 Small', target: 'test-r-small', rVersion: '3.3.3',
-      timeoutValue: 110, lang: buildConfig.LANG_R
+      timeoutValue: 110, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.3 Small Client Mode', target: 'test-r-small-client-mode', rVersion: '3.3.3',
-      timeoutValue: 140, lang: buildConfig.LANG_R
+      timeoutValue: 140, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.3 CMD Check', target: 'test-r-cmd-check', rVersion: '3.3.3',
-      timeoutValue: 15, hasJUnit: false, lang: buildConfig.LANG_R
+      timeoutValue: 15, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_R
     ],
     [
       stageName: 'R3.3 CMD Check as CRAN', target: 'test-r-cmd-check-as-cran', rVersion: '3.3.3',
-      timeoutValue: 10, hasJUnit: false, lang: buildConfig.LANG_R
+      timeoutValue: 10, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_R
     ]
   ]
-
-  // run smoke tests, the tests relevant for this mode
 
   def modeCode = MODES.find{it['name'] == buildConfig.getMode()}['code']
   if (modeCode == MODE_BENCHMARK_CODE) {
     executeInParallel(BENCHMARK_STAGES, buildConfig)
   } else {
     executeInParallel(SMOKE_STAGES, buildConfig)
-    // FIXME: Remove the if and KEEP only the else once the initial PR tests in real environment are completed
-    def jobs = null
-    if (modeCode == MODE_PR_TESTING_CODE) {
-      jobs = PR_TESTING_STAGES
-    } else {
-      jobs = PR_STAGES
-      if (modeCode >= MODE_MASTER_CODE) {
-        jobs += MASTER_STAGES
-      }
-      if (modeCode >= MODE_NIGHTLY_CODE) {
-        jobs += NIGHTLY_STAGES
-      }
+    def jobs = PR_STAGES
+    if (modeCode >= MODE_MASTER_CODE) {
+      jobs += MASTER_STAGES
+    }
+    if (modeCode >= MODE_NIGHTLY_CODE) {
+      jobs += NIGHTLY_STAGES
     }
     executeInParallel(jobs, buildConfig)
   }
 }
 
-def executeInParallel(jobs, buildConfig) {
+def executeInParallel(final jobs, final pipelineContext) {
   parallel(jobs.collectEntries { c ->
     [
       c['stageName'], {
-        invokeStage(buildConfig) {
+        invokeStage(pipelineContext) {
           stageName = c['stageName']
           target = c['target']
           pythonVersion = c['pythonVersion']
@@ -233,7 +225,7 @@ def executeInParallel(jobs, buildConfig) {
   })
 }
 
-def invokeStage(buildConfig, body) {
+def invokeStage(final pipelineContext, final body) {
 
   def DEFAULT_PYTHON = '3.5'
   def DEFAULT_R = '3.4.1'
@@ -251,18 +243,18 @@ def invokeStage(buildConfig, body) {
   config.timeoutValue = config.timeoutValue ?: DEFAULT_TIMEOUT
   config.hasJUnit = config.hasJUnit ?: true
   config.additionalTestPackages = config.additionalTestPackages ?: []
-  config.nodeLabel = config.nodeLabel ?: buildConfig.getDefaultNodeLabel()
+  config.nodeLabel = config.nodeLabel ?: pipelineContext.getBuildConfig().getDefaultNodeLabel()
   config.executionScript = config.executionScript ?: DEFAULT_EXECUTION_SCRIPT
-  config.image = config.image ?: buildConfig.DEFAULT_IMAGE
-  config.makefilePath = config.makefilePath ?: buildConfig.MAKEFILE_PATH
+  config.image = config.image ?: pipelineContext.getBuildConfig().DEFAULT_IMAGE
+  config.makefilePath = config.makefilePath ?: pipelineContext.getBuildConfig().MAKEFILE_PATH
 
-  buildConfig.addStageSummary(this, config.stageName)
-  withCustomCommitStates(scm, 'h2o-ops-personal-auth-token', "${buildConfig.getGitHubCommitStateContext(config.stageName)}") {
+  pipelineContext.getBuildSummary().addStageSummary(this, config.stageName)
+  withCustomCommitStates(scm, 'h2o-ops-personal-auth-token', "${pipelineContext.getBuildConfig().getGitHubCommitStateContext(config.stageName)}") {
     try {
       node(config.nodeLabel) {
-        buildConfig.setStageDetails(this, config.stageName, env.NODE_NAME, env.WORKSPACE)
+        pipelineContext.getBuildSummary().setStageDetails(this, config.stageName, env.NODE_NAME, env.WORKSPACE)
         echo "###### Unstash scripts. ######"
-        unstash name: buildConfig.PIPELINE_SCRIPTS_STASH_NAME
+        unstash name: pipelineContext.getBuildConfig().PIPELINE_SCRIPTS_STASH_NAME
 
         if (config.stageDir == null) {
           def stageNameToDirName = load('h2o-3/scripts/jenkins/groovy/stageNameToDirName.groovy')
@@ -271,12 +263,11 @@ def invokeStage(buildConfig, body) {
         sh "rm -rf ${config.stageDir}"
 
         def script = load(config.executionScript)
-        script(buildConfig, config)
+        script(pipelineContext, config)
       }
-      buildConfig.markStageSuccessful(this, config.stageName)
-      echo "Build Summary: ${buildConfig.getBuildSummary().toString()}"
+      pipelineContext.getBuildSummary().markStageSuccessful(this, config.stageName)
     } catch (Exception e) {
-      buildConfig.markStageFailed(this, config.stageName)
+      pipelineContext.getBuildSummary().markStageFailed(this, config.stageName)
       throw e
     }
   }

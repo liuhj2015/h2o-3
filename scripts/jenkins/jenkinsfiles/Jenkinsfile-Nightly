@@ -3,7 +3,7 @@
 def DEFAULT_NODE_LABEL = 'docker && !mr-0xc8'
 
 def defineTestStages = null
-def buildConfig = null
+def pipelineContext = null
 def pipelineEmailContent = null
 def emailContentHelpers = null
 def sendEmail = null
@@ -36,8 +36,8 @@ try {
           setBuildDesc()
 
           def prepareH2O3 = load('h2o-3/scripts/jenkins/groovy/prepareH2O3.groovy')
-          buildConfig = prepareH2O3(scmEnv, 'MODE_NIGHTLY', true)
-          buildConfig.setDefaultOverrideRerun(true)
+          pipelineContext = prepareH2O3(scmEnv, 'MODE_NIGHTLY', true)
+          pipelineContext.setDefaultOverrideRerun(true)
 
           def setJobProperties = load('h2o-3/scripts/jenkins/groovy/setJobProperties.groovy')
           // Execute nightly for master at 22:XX, 0:XX, 2:XX, 4:XX and 6:XX
@@ -46,13 +46,13 @@ try {
           if (env.BRANCH_NAME.startsWith('rel-')) {
             scheduleString = 'H 21 * * *'
           }
-          setJobProperties(buildConfig, pipelineTriggers([cron(scheduleString)]))
+          setJobProperties(pipelineContext, pipelineTriggers([cron(scheduleString)]))
 
           // Load the defineTestStages script
           defineTestStages = load('h2o-3/scripts/jenkins/groovy/defineTestStages.groovy')
         }
       }
-      defineTestStages(buildConfig)
+      defineTestStages(pipelineContext)
       result = 'SUCCESS'
     }
   }

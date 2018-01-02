@@ -7,6 +7,8 @@ def sendEmail = null
 def emailContentHelpers = null
 def releasePipelineEmailContent = null
 
+
+// FIXME
 try {
     ansiColor('xterm') {
         timestamps {

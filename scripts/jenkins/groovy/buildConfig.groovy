@@ -1,3 +1,9 @@
+def call(final context, final String mode, final String commitMessage, final List<String> changes, final boolean overrideDetectionChange) {
+  def buildConfig = new BuildConfig()
+  buildConfig.initialize(context, mode, commitMessage, changes, overrideDetectionChange)
+  return buildConfig
+}
+
 class BuildConfig {
 
   public static final String DOCKER_REGISTRY = 'docker.h2o.ai'
@@ -48,7 +54,7 @@ class BuildConfig {
     (LANG_NONE): true
   ]
 
-  private BuildConfig(final Script context, final String mode, final String commitMessage, final List<String> changes, final boolean overrideDetectionChange) {
+  void initialize(final context, final String mode, final String commitMessage, final List<String> changes, final boolean overrideDetectionChange) {
     this.mode = mode
     this.nodeLabel = nodeLabel
     this.commitMessage = commitMessage
@@ -168,12 +174,6 @@ class BuildConfig {
     return "${COMMIT_STATE_PREFIX} » ${stageName}"
   }
 
-  static class Factory {
-    static BuildConfig create(final Script context, final String mode, final String commitMessage, final List<String> changes, final boolean overrideDetectionChange) {
-      return new BuildConfig(context, mode, commitMessage, changes, overrideDetectionChange)
-    }
-  }
-
   static enum JenkinsMaster {
     C1, // indicates we are running under mr-0xc1 master - master or nightly build
     B4  // indicates we are running under mr-0xb4 master - PR build
@@ -207,11 +207,11 @@ class BuildConfig {
       this.benchmarkNodeLabel = benchmarkNodeLabel
     }
 
-    public String getDefaultNodeLabel() {
+    String getDefaultNodeLabel() {
       return defaultNodeLabel
     }
 
-    public String getBenchmarkNodeLabel() {
+    String getBenchmarkNodeLabel() {
       return benchmarkNodeLabel
     }
 
@@ -229,4 +229,4 @@ class BuildConfig {
 
 }
 
-return new BuildConfig.Factory()
+return this
