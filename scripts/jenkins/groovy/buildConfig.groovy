@@ -82,6 +82,9 @@ class BuildConfig {
   public static final List PYTHON_VERSIONS = ['2.7', '3.5', '3.6']
   public static final List R_VERSIONS = ['3.3.3', '3.4.1']
 
+  public static final String MAKEFILE_PATH = 'scripts/jenkins/Makefile.jenkins'
+  public static final String BENCHMARK_MAKEFILE_PATH = 'ml-benchmark/jenkins/Makefile.jenkins'
+
   private String mode
   private String nodeLabel
   private String commitMessage

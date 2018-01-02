@@ -13,8 +13,6 @@ def call(buildConfig) {
     [name: 'MODE_NIGHTLY', code: MODE_NIGHTLY_CODE]
   ]
 
-  def BENCHMARK_MAKEFILE_PATH = 'ml-benchmark/jenkins/Makefile.jenkins'
-
   // Job will execute PR_STAGES only if these are green.
   def SMOKE_STAGES = [
     [
@@ -134,7 +132,7 @@ def call(buildConfig) {
       stageName: 'GBM Benchmark', executionScript: 'h2o-3/scripts/jenkins/groovy/benchmarkStage.groovy',
       timeoutValue: 120, target: 'benchmark', lang: buildConfig.LANG_NONE,
       additionalTestPackages: [buildConfig.LANG_R], image: buildConfig.BENCHMARK_IMAGE,
-      nodeLabel: buildConfig.getBenchmarkNodeLabel(), model: 'gbm', makefilePath: BENCHMARK_MAKEFILE_PATH
+      nodeLabel: buildConfig.getBenchmarkNodeLabel(), model: 'gbm', makefilePath: buildConfig.BENCHMARK_MAKEFILE_PATH
     ]
   ]
 
@@ -241,7 +239,6 @@ def invokeStage(buildConfig, body) {
   def DEFAULT_R = '3.4.1'
   def DEFAULT_TIMEOUT = 60
   def DEFAULT_EXECUTION_SCRIPT = 'h2o-3/scripts/jenkins/groovy/defaultStage.groovy'
-  def DEFAULT_MAKEFILE_PATH = 'docker/Makefile.jenkins'
 
   def config = [:]
   body.resolveStrategy = Closure.DELEGATE_FIRST
@@ -273,7 +270,7 @@ def invokeStage(buildConfig, body) {
     config.image = buildConfig.DEFAULT_IMAGE
   }
   if (config.makefilePath == null) {
-    config.makefilePath = DEFAULT_MAKEFILE_PATH
+    config.makefilePath = buildConfig.MAKEFILE_PATH
   }
 
   buildConfig.addStageSummary(this, config.stageName)

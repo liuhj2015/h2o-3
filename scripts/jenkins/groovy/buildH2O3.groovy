@@ -23,26 +23,26 @@ def call(buildConfig) {
               target = 'build-h2o-3'
               hasJUnit = false
               archiveFiles = false
-              makefilePath = 'docker/Makefile.jenkins'
+              makefilePath = buildConfig.MAKEFILE_PATH
             }
             buildTarget {
               target = 'test-package-py'
               hasJUnit = false
               archiveFiles = false
-              makefilePath = 'docker/Makefile.jenkins'
+              makefilePath = buildConfig.MAKEFILE_PATH
             }
             buildTarget {
               target = 'test-package-r'
               hasJUnit = false
               archiveFiles = false
-              makefilePath = 'docker/Makefile.jenkins'
+              makefilePath = buildConfig.MAKEFILE_PATH
             }
             if (buildConfig.langChanged(buildConfig.LANG_JS)) {
               buildTarget {
                 target = 'test-package-js'
                 hasJUnit = false
                 archiveFiles = false
-                makefilePath = 'docker/Makefile.jenkins'
+                makefilePath = buildConfig.MAKEFILE_PATH
               }
             }
             if (buildConfig.langChanged(buildConfig.LANG_JAVA)) {
@@ -50,12 +50,12 @@ def call(buildConfig) {
                 target = 'test-package-java'
                 hasJUnit = false
                 archiveFiles = false
-                makefilePath = 'docker/Makefile.jenkins'
+                makefilePath = buildConfig.MAKEFILE_PATH
               }
             }
           } finally {
             archiveArtifacts """
-          h2o-3/docker/Makefile.jenkins,
+          h2o-3/${buildConfig.MAKEFILE_PATH},
           h2o-3/h2o-py/dist/*.whl,
           h2o-3/build/h2o.jar,
           h2o-3/h2o-3/src/contrib/h2o_*.tar.gz,
