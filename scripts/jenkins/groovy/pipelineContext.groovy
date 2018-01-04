@@ -4,11 +4,10 @@ def call(final String h2o3Root, final String mode, final scmEnv, final boolean o
     final String PIPELINE_UTILS_SCRIPT_NAME = 'pipelineUtils.groovy'
     final String EMAILER_SCRIPT_NAME = 'emailer.groovy'
 
-    // get commit message
-    env.COMMIT_MESSAGE = sh(script: 'cd h2o-3 && git log -1 --pretty=%B', returnStdout: true).trim()
+    env.COMMIT_MESSAGE = sh(script: "cd ${h2o3Root} && git log -1 --pretty=%B", returnStdout: true).trim()
     env.BRANCH_NAME = scmEnv['GIT_BRANCH'].replaceAll('origin/', '')
     env.GIT_SHA = scmEnv['GIT_COMMIT']
-    env.GIT_DATE = "${sh(script: 'cd h2o-3 && git show -s --format=%ci', returnStdout: true).trim()}"
+    env.GIT_DATE = sh(script: "cd ${h2o3Root} && git show -s --format=%ci", returnStdout: true).trim()
 
     def final buildSummaryFactory = load("${h2o3Root}/scripts/jenkins/groovy/${BUILD_SUMMARY_SCRIPT_NAME}")
     def final buildConfigFactory = load("${h2o3Root}/scripts/jenkins/groovy/${BUILD_CONFIG_SCRIPT_NAME}")

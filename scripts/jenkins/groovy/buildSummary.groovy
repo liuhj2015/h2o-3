@@ -40,14 +40,14 @@ class BuildSummary {
         return section
     }
 
-    Section findSection(final String title) {
-        return sections.find({it.getId() == title})
+    Section findSection(final String id) {
+        return sections.find({it.getId() == id})
     }
 
-    Section findSectionOrThrow(final String title) {
-        def section = findSection(title)
+    Section findSectionOrThrow(final String id) {
+        def section = findSection(id)
         if (section == null) {
-            throw new IllegalStateException("Cannot find section with title %s".format(title))
+            throw new IllegalStateException("Cannot find section with id %s".format(id))
         }
         return section
     }
@@ -120,13 +120,13 @@ class BuildSummary {
 
     String getSummaryHTML(final context) {
 
-        def stagesSection = ''
-        def stagesTableBody = ''
+        String stagesSection = ''
+        String stagesTableBody = ''
 
         if (!stageSummaries.isEmpty()) {
             for (stageSummary in stageSummaries) {
-                def nodeName = stageSummary.getNodeName() == null ? 'Not yet allocated' : stageSummary.getNodeName()
-                def result = stageSummary.getResult() == null ? RESULT_PENDING.capitalize() : stageSummary.getResult()
+                def nodeName = stageSummary.getNodeName() ?: 'Not yet allocated'
+                def result = stageSummary.getResult() ?: RESULT_PENDING.capitalize()
                 stagesTableBody += """
                   <tr style="background-color: ${stageResultToBgColor(stageSummary.getResult())}">
                     <td style="${TD_STYLE}">${stageSummary.getName()}</td>
@@ -161,10 +161,10 @@ class BuildSummary {
         }
 
         return """
-          <div style="border: 1px solid #d3d7cf; padding: 0em 1em 1em 1em;">
-            ${sectionsHTML}
-            ${stagesSection}  
-          </div>
+            <div style="border: 1px solid #d3d7cf; padding: 0em 1em 1em 1em;">'
+                ${sectionsHTML}
+                ${stagesSection}
+            </div>
         """
     }
 
@@ -176,7 +176,7 @@ class BuildSummary {
         context.currentBuild.description = getSummaryHTML(context)
     }
 
-    private String createHTMLForSection(final String title, final String content, final boolean bottomBorder=true) {
+    private String createHTMLForSection(final String title, final String content, final boolean bottomBorder = true) {
         def bottomBorderValue = ''
         if (bottomBorder) {
             bottomBorderValue = 'border-bottom: 1px dashed gray;'
@@ -212,13 +212,13 @@ class BuildSummary {
     }
 
     private def findStageSummaryWithName(final String stageName) {
-        return stageSummaries.find({it.getName() == stageName})
+        return stageSummaries.find({ it.getName() == stageName })
     }
 
     private def findStageSummaryWithNameOrThrow(final String stageName) {
         def summary = findStageSummaryWithName(stageName)
         if (summary == null) {
-            throw new IllegalStateException("Cannot find StageSummary with name %s".format(stageName))
+            throw new IllegalArgumentException('Cannot find StageSummary with name %s'.format(stageName))
         }
         return summary
     }
@@ -297,11 +297,7 @@ class BuildSummary {
         }
 
         String getWorkspaceText() {
-            String workspaceText = getWorkspace()
-            if (workspaceText == null) {
-                workspaceText = 'Not yet allocated'
-            }
-            return workspaceText
+            return getWorkspace() ?: 'Not yet allocated'
         }
 
         String getArtifactsHTML(final context) {

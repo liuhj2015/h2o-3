@@ -46,7 +46,7 @@ def call(final pipelineContext, final stageConfig) {
   }
 
   def compareBenchmarksStage = load("h2o-3/scripts/jenkins/groovy/compareBenchmarksStage.groovy")
-  compareBenchmarksStage(pipelineContext.getBuildConfig(), stageConfig, benchmarkFolderConfig)
+  compareBenchmarksStage(pipelineContext, stageConfig, benchmarkFolderConfig)
 }
 
 return this
