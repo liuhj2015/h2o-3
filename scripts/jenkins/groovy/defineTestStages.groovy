@@ -245,7 +245,7 @@ def invokeStage(final pipelineContext, final body) {
         try {
         pipelineContext.getBuildSummary().setStageDetails(this, config.stageName, env.NODE_NAME, env.WORKSPACE)
         echo "###### Unstash scripts. ######"
-        unstash name: pipelineContext.getBuildConfig().PIPELINE_SCRIPTS_STASH_NAME
+        pipelineContext.getUtils().unstashScripts(this)
 
         sh "rm -rf ${config.stageDir}"
 

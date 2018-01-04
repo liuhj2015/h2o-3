@@ -7,7 +7,6 @@ def call(final context, final String mode, final String commitMessage, final Lis
 class BuildConfig {
 
   public static final String DOCKER_REGISTRY = 'docker.h2o.ai'
-  public static final String PIPELINE_SCRIPTS_STASH_NAME = 'pipeline_scripts'
 
   private static final String DEFAULT_IMAGE_NAME = 'h2o-3-runtime'
   private static final String DEFAULT_IMAGE_VERSION_TAG = '106'
@@ -42,8 +41,6 @@ class BuildConfig {
   private String nodeLabel
   private String commitMessage
   private boolean defaultOverrideRerun = false
-  private String majorVersion
-  private String buildVersion
   private JenkinsMaster master
   private NodeLabels nodeLabels
   private LinkedHashMap changesMap = [
@@ -71,10 +68,6 @@ class BuildConfig {
     return mode
   }
 
-  def getCommitMessage() {
-    return commitMessage
-  }
-
   def setDefaultOverrideRerun(final boolean defaultOverrideRerun) {
     this.defaultOverrideRerun = defaultOverrideRerun
   }
@@ -91,14 +84,6 @@ class BuildConfig {
     return changesMap[lang]
   }
 
-  def getMajorVersion() {
-    return majorVersion
-  }
-
-  def getBuildVersion() {
-    return buildVersion
-  }
-
   JenkinsMaster getMaster() {
     return master
   }
@@ -109,23 +94,6 @@ class BuildConfig {
 
   String getBenchmarkNodeLabel() {
     return nodeLabels.getBenchmarkNodeLabel()
-  }
-
-  String toString() {
-    return """
-=======================================================================
-    Major Version:              | ${getMajorVersion()}
-    Build Version:              | ${getBuildVersion()}
-    Mode:                       | ${getMode()}
-    Default Node Label:         | ${getDefaultNodeLabel()}
-    Benchmark Node Label:       | ${getBenchmarkNodeLabel()}
-    Commit Message:             | ${getCommitMessage()}
-    Default for Override Rerun: | ${getDefaultOverrideRerun()}
-    Runtime image:              | ${DEFAULT_IMAGE}
-    Benchmark image:            | ${BENCHMARK_IMAGE}
-    Changes:                    | ${changesMap}
-=======================================================================
-    """
   }
 
   List<String> getBuildEnv() {
@@ -179,16 +147,6 @@ class BuildConfig {
     changesMap.each { k,v ->
       // mark no changes for all langs except LANG_NONE
       changesMap[k] = k == LANG_NONE
-    }
-  }
-
-  void readVersion(final String versionFileContent) {
-    versionFileContent.split('\n').each{ line ->
-      if (line.startsWith('Version: ')) {
-        def versionString = line.replace('Version: ', '')
-        this.majorVersion = versionString.split('\\.')[0..2].join('.')
-        this.buildVersion = versionString.split('\\.')[3..-1].join('.')
-      }
     }
   }
 
