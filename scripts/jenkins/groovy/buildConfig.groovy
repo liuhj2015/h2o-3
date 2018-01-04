@@ -103,6 +103,10 @@ class BuildConfig {
     ]
   }
 
+  void setJobProperties(final context) {
+    setJobProperties(context, null)
+  }
+
   void setJobProperties(final context, final customProperties) {
     def jobProperties = [
       context.parameters([
