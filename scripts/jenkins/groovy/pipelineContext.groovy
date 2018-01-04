@@ -3,7 +3,6 @@ def call(final String h2o3Root, final String mode, final scmEnv, final boolean o
     final String BUILD_CONFIG_SCRIPT_NAME = 'buildConfig.groovy'
     final String PIPELINE_UTILS_SCRIPT_NAME = 'pipelineUtils.groovy'
     final String EMAILER_SCRIPT_NAME = 'emailer.groovy'
-    final String GET_CHANGES_SCRIPT_NAME = 'getChanges.groovy'
 
     // get commit message
     env.COMMIT_MESSAGE = sh(script: 'cd h2o-3 && git log -1 --pretty=%B', returnStdout: true).trim()
@@ -15,7 +14,6 @@ def call(final String h2o3Root, final String mode, final scmEnv, final boolean o
     def final buildConfigFactory = load("${h2o3Root}/scripts/jenkins/groovy/${BUILD_CONFIG_SCRIPT_NAME}")
     def final pipelineUtilsFactory = load("${h2o3Root}/scripts/jenkins/groovy/${PIPELINE_UTILS_SCRIPT_NAME}")
     def final emailerFactory = load("${h2o3Root}/scripts/jenkins/groovy/${EMAILER_SCRIPT_NAME}")
-    def final getChanges = load("${h2o3Root}/scripts/jenkins/groovy/${GET_CHANGES_SCRIPT_NAME}")
 
     return new PipelineContext(
             buildConfigFactory(this, mode, env.COMMIT_MESSAGE, getChanges(h2o3Root), overrideDetectionChange),
@@ -23,6 +21,15 @@ def call(final String h2o3Root, final String mode, final scmEnv, final boolean o
             pipelineUtilsFactory(),
             emailerFactory()
     )
+}
+
+private List<String> getChanges(final String h2o3Root) {
+    sh """
+        cd ${h2o3Root}
+        git fetch --no-tags --progress https://github.com/h2oai/h2o-3 +refs/heads/master:refs/remotes/origin/master
+    """
+    final String mergeBaseSHA = sh(script: "cd ${h2o3Root} && git merge-base HEAD origin/master", returnStdout: true).trim()
+    return sh(script: "cd ${h2o3Root} && git diff --name-only ${mergeBaseSHA}", returnStdout: true).trim().tokenize('\n')
 }
 
 class PipelineContext{
