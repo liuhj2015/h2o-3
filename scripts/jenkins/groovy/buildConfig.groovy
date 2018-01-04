@@ -135,6 +135,21 @@ class BuildConfig {
     ]
   }
 
+  void setJobProperties(final context, final customProperties) {
+    def jobProperties = [
+      context.parameters([
+        context.booleanParam(defaultValue: getDefaultOverrideRerun(), description: 'If checked, execute all stages regardless of the commit message content. If not checked and the message contains !rerun, only stages failed in previous build will be executed.', name: 'overrideRerun')
+      ]),
+      context.buildDiscarder(context.logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '25'))
+    ]
+    if (customProperties != null) {
+      jobProperties += customProperties
+    }
+    context.properties(
+      jobProperties
+    )
+  }
+
   private void detectChanges(List<String> changes) {
     // clear the changes map
     markAllLangsForSkip()

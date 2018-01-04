@@ -29,14 +29,15 @@ try {
           pipelineContext = prepareH2O3(scmEnv, 'MODE_NIGHTLY', true)
           pipelineContext.setDefaultOverrideRerun(true)
 
-          def setJobProperties = load('h2o-3/scripts/jenkins/groovy/setJobProperties.groovy')
           // Execute nightly for master at 22:XX, 0:XX, 2:XX, 4:XX and 6:XX
           // for rel- branches at 21:XX
-          def scheduleString = 'H 22,0,2,4,6 * * *'
+          final String scheduleString
           if (env.BRANCH_NAME.startsWith('rel-')) {
             scheduleString = 'H 21 * * *'
+          } else {
+            scheduleString = 'H 22,0,2,4,6 * * *'
           }
-          setJobProperties(pipelineContext, pipelineTriggers([cron(scheduleString)]))
+          pipelineContext.getBuildConfig().setJobProperties(this, pipelineTriggers([cron(scheduleString)]))
 
           // Load the defineTestStages script
           defineTestStages = load('h2o-3/scripts/jenkins/groovy/defineTestStages.groovy')
