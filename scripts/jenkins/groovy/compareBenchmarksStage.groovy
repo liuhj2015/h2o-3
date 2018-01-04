@@ -195,7 +195,8 @@ def sendBenchmarksWarningMail(final pipelineContext, final failures) {
     """
     benchmarksSummary.addSection(this, 'warnings', 'Warnings', warningsTable)
 
-    pipelineContext.getEmailer().sendEmail(this, pipelineContext.getBuildSummary().RESULT_WARNING, pipelineContext.getBuildSummary().getSummaryHTML(this))
+    // FIXME set proper recipients
+    pipelineContext.getEmailer().sendEmail(this, pipelineContext.getBuildSummary().RESULT_WARNING, pipelineContext.getBuildSummary().getSummaryHTML(this), ['michalr@h2o.ai'])
 }
 
 return this
