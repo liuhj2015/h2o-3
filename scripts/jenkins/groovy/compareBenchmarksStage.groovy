@@ -56,9 +56,8 @@ def call(final pipelineContext, final stageConfig, final benchmarkFolderConfig) 
     def TESTED_COLUMNS = ['train_time']
 
     def insideDocker = load('h2o-3/scripts/jenkins/groovy/insideDocker.groovy')
-    def customEnv = load('h2o-3/scripts/jenkins/groovy/customEnv.groovy')
 
-    insideDocker(customEnv(), stageConfig.image, pipelineContext.getBuildConfig().DOCKER_REGISTRY, 5, 'MINUTES') {
+    insideDocker(pipelineContext.getBuildConfig().getBuildEnv(), stageConfig.image, pipelineContext.getBuildConfig().DOCKER_REGISTRY, 5, 'MINUTES') {
         String csvFilePath = "${pipelineContext.getUtils().stageNameToDirName(stageConfig.stageName)}/${benchmarkFolderConfig.getCSVPath()}"
         def csvData = parseCsvFile(csvFilePath)
 

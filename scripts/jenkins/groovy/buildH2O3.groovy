@@ -6,7 +6,6 @@ def call(final pipelineContext) {
   // Load required scripts
   def insideDocker = load('h2o-3/scripts/jenkins/groovy/insideDocker.groovy')
   def buildTarget = load('h2o-3/scripts/jenkins/groovy/buildTarget.groovy')
-  def customEnv = load('h2o-3/scripts/jenkins/groovy/customEnv.groovy')
 
   def stageName = 'Build H2O-3'
   
@@ -15,7 +14,7 @@ def call(final pipelineContext) {
     pipelineContext.getBuildSummary().setStageDetails(this, stageName, env.NODE_NAME, env.WORKSPACE)
     try {
       // Launch docker container, build h2o-3, create test packages and archive artifacts
-      def buildEnv = customEnv() + "PYTHON_VERSION=${PYTHON_VERSION}" + "R_VERSION=${R_VERSION}"
+      def buildEnv = pipelineContext.getBuildConfig().getBuildEnv() + "PYTHON_VERSION=${PYTHON_VERSION}" + "R_VERSION=${R_VERSION}"
       insideDocker(buildEnv, pipelineContext.getBuildConfig().DEFAULT_IMAGE, pipelineContext.getBuildConfig().DOCKER_REGISTRY, 30, 'MINUTES') {
         stage(stageName) {
           try {

@@ -128,6 +128,13 @@ class BuildConfig {
     """
   }
 
+  List<String> getBuildEnv() {
+    return [
+      "JAVA_VERSION=8",
+      "BUILD_HADOOP=false",
+    ]
+  }
+
   private void detectChanges(List<String> changes) {
     // clear the changes map
     markAllLangsForSkip()
