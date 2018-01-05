@@ -17,19 +17,19 @@ def call(final pipelineContext) {
   def SMOKE_STAGES = [
     [
       stageName: 'Py2.7 Smoke', target: 'test-py-smoke', pythonVersion: '2.7',
-      timeoutValue: 8, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 8, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'R3.4 Smoke', target: 'test-r-smoke', rVersion: '3.4.1',
-      timeoutValue: 8, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 8, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'PhantomJS Smoke', target: 'test-phantom-js-smoke',
-      timeoutValue: 20, lang: pipelineContext.getBuildConfig().LANG_JS
+      timeoutValue: 20, component: pipelineContext.getBuildConfig().COMPONENT_JS
     ],
     [
       stageName: 'Java8 Smoke', target: 'test-junit-smoke',
-      timeoutValue: 20, lang: pipelineContext.getBuildConfig().LANG_JAVA
+      timeoutValue: 20, component: pipelineContext.getBuildConfig().COMPONENT_JAVA
     ]
   ]
 
@@ -37,91 +37,91 @@ def call(final pipelineContext) {
   def PR_STAGES = [
     [
       stageName: 'Py2.7 Booklets', target: 'test-py-booklets', pythonVersion: '2.7',
-      timeoutValue: 40, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 40, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'Py2.7 Demos', target: 'test-py-demos', pythonVersion: '2.7',
-      timeoutValue: 30, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 30, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'Py2.7 Init', target: 'test-py-init', pythonVersion: '2.7',
-      timeoutValue: 5, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 5, hasJUnit: false, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'Py2.7 Small', target: 'test-pyunit-small', pythonVersion: '2.7',
-      timeoutValue: 90, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 90, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'Py3.5 Small', target: 'test-pyunit-small', pythonVersion: '3.5',
-      timeoutValue: 90, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 90, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'Py3.6 Small', target: 'test-pyunit-small', pythonVersion: '3.6',
-      timeoutValue: 90, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 90, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'R3.4 Init', target: 'test-r-init', rVersion: '3.4.1',
-      timeoutValue: 5, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 5, hasJUnit: false, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.4 Small', target: 'test-r-small', rVersion: '3.4.1',
-      timeoutValue: 110, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 110, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.4 Small Client Mode', target: 'test-r-small-client-mode', rVersion: '3.4.1',
-      timeoutValue: 140, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 140, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.4 CMD Check', target: 'test-r-cmd-check', rVersion: '3.4.1',
-      timeoutValue: 15, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 15, hasJUnit: false, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.4 CMD Check as CRAN', target: 'test-r-cmd-check-as-cran', rVersion: '3.4.1',
-      timeoutValue: 10, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 10, hasJUnit: false, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.4 Booklets', target: 'test-r-booklets', rVersion: '3.4.1',
-      timeoutValue: 50, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 50, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.4 Demos Small', target: 'test-r-demos-small', rVersion: '3.4.1',
-      timeoutValue: 15, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 15, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'PhantomJS', target: 'test-phantom-js',
-      timeoutValue: 75, lang: pipelineContext.getBuildConfig().LANG_JS
+      timeoutValue: 75, component: pipelineContext.getBuildConfig().COMPONENT_JS
     ],
     [
       stageName: 'Py3.6 Medium-large', target: 'test-pyunit-medium-large', pythonVersion: '3.5',
-      timeoutValue: 120, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 120, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'R3.4 Medium-large', target: 'test-r-medium-large', rVersion: '3.4.1',
-      timeoutValue: 70, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 70, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.4 Demos Medium-large', target: 'test-r-demos-medium-large', rVersion: '3.4.1',
-      timeoutValue: 120, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 120, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'INFO Check', target: 'test-info',
-      timeoutValue: 10, lang: pipelineContext.getBuildConfig().LANG_NONE, additionalTestPackages: [pipelineContext.getBuildConfig().LANG_R]
+      timeoutValue: 10, component: pipelineContext.getBuildConfig().COMPONENT_ANY, additionalTestPackages: [pipelineContext.getBuildConfig().COMPONENT_R]
     ],
     [
       stageName: 'Py3.6 Test Demos', target: 'test-demos', pythonVersion: '3.6',
-      timeoutValue: 10, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 10, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'Java 8 JUnit', target: 'test-junit-jenkins', pythonVersion: '2.7',
-      timeoutValue: 90, lang: pipelineContext.getBuildConfig().LANG_JAVA, additionalTestPackages: [pipelineContext.getBuildConfig().LANG_PY]
+      timeoutValue: 90, component: pipelineContext.getBuildConfig().COMPONENT_JAVA, additionalTestPackages: [pipelineContext.getBuildConfig().COMPONENT_PY]
     ]
   ]
 
   def BENCHMARK_STAGES = [
     [
       stageName: 'GBM Benchmark', executionScript: 'h2o-3/scripts/jenkins/groovy/benchmarkStage.groovy',
-      timeoutValue: 120, target: 'benchmark', lang: pipelineContext.getBuildConfig().LANG_NONE,
-      additionalTestPackages: [pipelineContext.getBuildConfig().LANG_R], image: pipelineContext.getBuildConfig().BENCHMARK_IMAGE,
+      timeoutValue: 120, target: 'benchmark', component: pipelineContext.getBuildConfig().COMPONENT_ANY,
+      additionalTestPackages: [pipelineContext.getBuildConfig().COMPONENT_R], image: pipelineContext.getBuildConfig().BENCHMARK_IMAGE,
       nodeLabel: pipelineContext.getBuildConfig().getBenchmarkNodeLabel(), customData: [model: 'gbm'], makefilePath: pipelineContext.getBuildConfig().BENCHMARK_MAKEFILE_PATH
     ]
   ]
@@ -130,23 +130,23 @@ def call(final pipelineContext) {
   def MASTER_STAGES = [
     [
       stageName: 'Py2.7 Medium-large', target: 'test-pyunit-medium-large', pythonVersion: '2.7',
-      timeoutValue: 120, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 120, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'Py3.5 Medium-large', target: 'test-pyunit-medium-large', pythonVersion: '3.5',
-      timeoutValue: 120, lang: pipelineContext.getBuildConfig().LANG_PY
+      timeoutValue: 120, component: pipelineContext.getBuildConfig().COMPONENT_PY
     ],
     [
       stageName: 'R3.4 Datatable', target: 'test-r-datatable', rVersion: '3.4.1',
-      timeoutValue: 40, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 40, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'PhantomJS Small', target: 'test-phantom-js-small',
-      timeoutValue: 75, lang: pipelineContext.getBuildConfig().LANG_JS
+      timeoutValue: 75, component: pipelineContext.getBuildConfig().COMPONENT_JS
     ],
     [
       stageName: 'PhantomJS Medium', target: 'test-phantom-js-medium',
-      timeoutValue: 75, lang: pipelineContext.getBuildConfig().LANG_JS
+      timeoutValue: 75, component: pipelineContext.getBuildConfig().COMPONENT_JS
     ]
   ]
   MASTER_STAGES += BENCHMARK_STAGES
@@ -155,23 +155,23 @@ def call(final pipelineContext) {
   def NIGHTLY_STAGES = [
     [
       stageName: 'R3.3 Medium-large', target: 'test-r-medium-large', rVersion: '3.3.3',
-      timeoutValue: 70, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 70, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.3 Small', target: 'test-r-small', rVersion: '3.3.3',
-      timeoutValue: 110, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 110, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.3 Small Client Mode', target: 'test-r-small-client-mode', rVersion: '3.3.3',
-      timeoutValue: 140, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 140, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.3 CMD Check', target: 'test-r-cmd-check', rVersion: '3.3.3',
-      timeoutValue: 15, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 15, hasJUnit: false, component: pipelineContext.getBuildConfig().COMPONENT_R
     ],
     [
       stageName: 'R3.3 CMD Check as CRAN', target: 'test-r-cmd-check-as-cran', rVersion: '3.3.3',
-      timeoutValue: 10, hasJUnit: false, lang: pipelineContext.getBuildConfig().LANG_R
+      timeoutValue: 10, hasJUnit: false, component: pipelineContext.getBuildConfig().COMPONENT_R
     ]
   ]
 
@@ -202,7 +202,7 @@ def executeInParallel(final jobs, final pipelineContext) {
           rVersion = c['rVersion']
           timeoutValue = c['timeoutValue']
           hasJUnit = c['hasJUnit']
-          lang = c['lang']
+          component = c['component']
           additionalTestPackages = c['additionalTestPackages']
           nodeLabel = c['nodeLabel']
           executionScript = c['executionScript']

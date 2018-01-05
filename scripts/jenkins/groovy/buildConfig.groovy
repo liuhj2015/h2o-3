@@ -18,13 +18,13 @@ class BuildConfig {
   // Use this image for benchmark stages
   public static final String BENCHMARK_IMAGE = DOCKER_REGISTRY + '/opsh2oai/' + BENCHMARK_IMAGE_NAME + ':' + BENCHMARK_IMAGE_VERSION_TAG
 
-  public static final String LANG_PY = 'py'
-  public static final String LANG_R = 'r'
-  public static final String LANG_JS = 'js'
-  public static final String LANG_JAVA = 'java'
+  public static final String COMPONENT_PY = 'py'
+  public static final String COMPONENT_R = 'r'
+  public static final String COMPONENT_JS = 'js'
+  public static final String COMPONENT_JAVA = 'java'
   // Use to indicate, that the stage is not component dependent such as MOJO Compatibility Test,
   // always run
-  public static final String LANG_NONE = 'none'
+  public static final String COMPONENT_ANY = 'none'
 
   public static final String H2O_OPS_TOKEN = 'h2o-ops-personal-auth-token'
   private static final String COMMIT_STATE_PREFIX = 'H2O-3 Pipeline'
@@ -44,11 +44,11 @@ class BuildConfig {
   private JenkinsMaster master
   private NodeLabels nodeLabels
   private LinkedHashMap changesMap = [
-    (LANG_PY): false,
-    (LANG_R): false,
-    (LANG_JS): false,
-    (LANG_JAVA): false,
-    (LANG_NONE): true
+    (COMPONENT_PY): false,
+    (COMPONENT_R): false,
+    (COMPONENT_JS): false,
+    (COMPONENT_JAVA): false,
+    (COMPONENT_ANY): true
   ]
 
   void initialize(final context, final String mode, final String commitMessage, final List<String> changes, final boolean overrideDetectionChange) {
@@ -126,13 +126,13 @@ class BuildConfig {
     // clear the changes map
     markAllLangsForSkip()
     // stages for lang none should be executed always
-    changesMap[LANG_NONE] = true
+    changesMap[COMPONENT_ANY] = true
 
     for (change in changes) {
       if (change.startsWith('h2o-py/') || change == 'h2o-bindings/bin/gen_python.py') {
-        changesMap[LANG_PY] = true
+        changesMap[COMPONENT_PY] = true
       } else if (change.startsWith('h2o-r/') ||  change == 'h2o-bindings/bin/gen_R.py') {
-        changesMap[LANG_R] = true
+        changesMap[COMPONENT_R] = true
       } else if (change.endsWith('.md')) {
         // no need to run any tests if only .md files are changed
       } else {
@@ -149,8 +149,8 @@ class BuildConfig {
 
   private void markAllLangsForSkip() {
     changesMap.each { k,v ->
-      // mark no changes for all langs except LANG_NONE
-      changesMap[k] = k == LANG_NONE
+      // mark no changes for all langs except COMPONENT_ANY
+      changesMap[k] = k == COMPONENT_ANY
     }
   }
 

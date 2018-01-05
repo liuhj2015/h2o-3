@@ -31,8 +31,8 @@ def call(final pipelineContext, final stageConfig) {
 
           def h2oFolder = stageConfig.stageDir + '/h2o-3'
 
-          // pull the test package unless this is a LANG_NONE stage
-          if (stageConfig.lang != pipelineContext.getBuildConfig().LANG_NONE) {
+          // pull the test package unless this is a COMPONENT_ANY stage
+          if (stageConfig.lang != pipelineContext.getBuildConfig().COMPONENT_ANY) {
             unpackTestPackage(stageConfig.lang, stageConfig.stageDir)
           }
           // pull aditional test packages
@@ -41,11 +41,11 @@ def call(final pipelineContext, final stageConfig) {
             unpackTestPackage(additionalPackage, stageConfig.stageDir)
           }
 
-          if (stageConfig.lang == pipelineContext.getBuildConfig().LANG_PY || stageConfig.additionalTestPackages.contains(pipelineContext.getBuildConfig().LANG_PY)) {
+          if (stageConfig.lang == pipelineContext.getBuildConfig().COMPONENT_PY || stageConfig.additionalTestPackages.contains(pipelineContext.getBuildConfig().COMPONENT_PY)) {
             installPythonPackage(h2oFolder)
           }
 
-          if (stageConfig.lang == pipelineContext.getBuildConfig().LANG_R || stageConfig.additionalTestPackages.contains(pipelineContext.getBuildConfig().LANG_R)) {
+          if (stageConfig.lang == pipelineContext.getBuildConfig().COMPONENT_R || stageConfig.additionalTestPackages.contains(pipelineContext.getBuildConfig().COMPONENT_R)) {
             installRPackage(h2oFolder)
           }
 

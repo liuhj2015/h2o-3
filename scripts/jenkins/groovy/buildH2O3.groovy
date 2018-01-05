@@ -36,7 +36,7 @@ def call(final pipelineContext) {
               archiveFiles = false
               makefilePath = pipelineContext.getBuildConfig().MAKEFILE_PATH
             }
-            if (pipelineContext.getBuildConfig().langChanged(pipelineContext.getBuildConfig().LANG_JS)) {
+            if (pipelineContext.getBuildConfig().langChanged(pipelineContext.getBuildConfig().COMPONENT_JS)) {
               makeTarget {
                 target = 'test-package-js'
                 hasJUnit = false
@@ -44,7 +44,7 @@ def call(final pipelineContext) {
                 makefilePath = pipelineContext.getBuildConfig().MAKEFILE_PATH
               }
             }
-            if (pipelineContext.getBuildConfig().langChanged(pipelineContext.getBuildConfig().LANG_JAVA)) {
+            if (pipelineContext.getBuildConfig().langChanged(pipelineContext.getBuildConfig().COMPONENT_JAVA)) {
               makeTarget {
                 target = 'test-package-java'
                 hasJUnit = false
