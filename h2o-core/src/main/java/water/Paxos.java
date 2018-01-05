@@ -175,13 +175,15 @@ public abstract class Paxos {
 
     @Override
     protected void setupLocal() {
+      Log.info("Executing on " + H2O.SELF);
       H2ONode client = H2O.getClientByIPPort(clientNode.getIpPortString());
       while(client == null){
         try {
           Thread.sleep(1000);
-          client = H2O.getClientByIPPort(clientNode.getIpPortString());
         }catch (InterruptedException e){
           // ignore
+        }finally {
+          client = H2O.getClientByIPPort(clientNode.getIpPortString());
         }
       }
     }
@@ -190,7 +192,9 @@ public abstract class Paxos {
 
   static private void lockCloud_impl(Object reason) {
     // Any fast-path cutouts must happen en route to here.
-    new ClientConsensusTask().doAllNodes();
+    if(H2O.ARGS.client) {
+      new ClientConsensusTask().doAllNodes();
+    }
     Log.info("Locking cloud to new members, because "+reason.toString());
     synchronized(Paxos.class) {
       while( !_commonKnowledge )
