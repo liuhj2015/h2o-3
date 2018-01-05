@@ -177,11 +177,6 @@ public class NetworkInit {
       Log.throwErr(e);
     }
     H2O.CLOUD_MULTICAST_PORT = NetworkUtils.getMulticastPort(hash);
-
-    // If I'm client let everybody know about me using broadcast message
-    if(H2O.isFlatfileEnabled() && H2O.ARGS.client) {
-      UDPClientEvent.ClientEvent.Type.CONNECT.broadcast(H2O.SELF);
-    }
   }
 
   /**
