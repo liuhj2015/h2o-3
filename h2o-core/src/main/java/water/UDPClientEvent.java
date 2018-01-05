@@ -30,7 +30,6 @@ public class UDPClientEvent extends UDP {
             Log.info("Client reported via broadcast message " + ce.clientNode + " from " + ab._h2o);
             H2O.addNodeToFlatfile(ce.clientNode);
             H2O.reportClient(ce.clientNode);
-            Paxos.doHeartbeat(ab._h2o);
           }
           break;
         // Regular disconnect event also doesn't have any effect in multicast mode.
