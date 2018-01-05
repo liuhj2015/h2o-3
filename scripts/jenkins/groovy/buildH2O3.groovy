@@ -5,7 +5,7 @@ def call(final pipelineContext) {
 
   // Load required scripts
   def insideDocker = load('h2o-3/scripts/jenkins/groovy/insideDocker.groovy')
-  def buildTarget = load('h2o-3/scripts/jenkins/groovy/buildTarget.groovy')
+  def makeTarget = load('h2o-3/scripts/jenkins/groovy/makeTarget.groovy')
 
   def stageName = 'Build H2O-3'
   
@@ -18,26 +18,26 @@ def call(final pipelineContext) {
       insideDocker(buildEnv, pipelineContext.getBuildConfig().DEFAULT_IMAGE, pipelineContext.getBuildConfig().DOCKER_REGISTRY, 30, 'MINUTES') {
         stage(stageName) {
           try {
-            buildTarget {
+            makeTarget {
               target = 'build-h2o-3'
               hasJUnit = false
               archiveFiles = false
               makefilePath = pipelineContext.getBuildConfig().MAKEFILE_PATH
             }
-            buildTarget {
+            makeTarget {
               target = 'test-package-py'
               hasJUnit = false
               archiveFiles = false
               makefilePath = pipelineContext.getBuildConfig().MAKEFILE_PATH
             }
-            buildTarget {
+            makeTarget {
               target = 'test-package-r'
               hasJUnit = false
               archiveFiles = false
               makefilePath = pipelineContext.getBuildConfig().MAKEFILE_PATH
             }
             if (pipelineContext.getBuildConfig().langChanged(pipelineContext.getBuildConfig().LANG_JS)) {
-              buildTarget {
+              makeTarget {
                 target = 'test-package-js'
                 hasJUnit = false
                 archiveFiles = false
@@ -45,7 +45,7 @@ def call(final pipelineContext) {
               }
             }
             if (pipelineContext.getBuildConfig().langChanged(pipelineContext.getBuildConfig().LANG_JAVA)) {
-              buildTarget {
+              makeTarget {
                 target = 'test-package-java'
                 hasJUnit = false
                 archiveFiles = false
