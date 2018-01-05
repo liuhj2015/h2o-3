@@ -37,24 +37,6 @@ public abstract class Paxos {
 
   public static final NonBlockingHashMap<H2Okey,H2ONode> PROPOSED = new NonBlockingHashMap<>();
 
-  /**
-   * Helper MR task used to detect clientDisconnectedConsensus on the timeout we last heard from the watchdog client
-   */
-  private static class H2OClientTask extends MRTask<H2OClientTask> {
-    private H2ONode clientNode;
-    H2OClientTask(H2ONode clientNode) {
-      super((byte)(H2O.SELF.index() % 126));
-      this.clientNode = clientNode;
-    }
-
-    @Override
-    protected void setupLocal() {
-      Log.info("Adding node to flatfile");
-      H2O.addNodeToFlatfile(clientNode);
-      H2O.reportClient(clientNode);
-    }
-  }
-
 
   // ---
   // This is a packet announcing what Cloud this Node thinks is the current
@@ -181,15 +163,33 @@ public abstract class Paxos {
     if( _cloudLocked ) return; // Fast-path cutout
     lockCloud_impl(reason);
   }
-  static private void lockCloud_impl(Object reason) {
-    // Any fast-path cutouts must happen en route to here.
-    if(H2O.ARGS.client){
-      try{
-        Thread.sleep(10000);
-      }catch (InterruptedException e) {
-        // ignore
+
+  /**
+   * Helper MR task used to detect clientDisconnectedConsensus on the timeout we last heard from the watchdog client
+   */
+  private static class ClientConsensusTask extends MRTask<ClientConsensusTask> {
+    private H2ONode clientNode;
+    ClientConsensusTask() {
+      this.clientNode = H2O.SELF;
+    }
+
+    @Override
+    protected void setupLocal() {
+      final H2ONode client = H2O.getClientByIPPort(clientNode.getIpPortString());
+      while(client == null){
+        try {
+          Thread.sleep(1000);
+        }catch (InterruptedException e){
+          // ignore
+        }
       }
     }
+  }
+
+
+  static private void lockCloud_impl(Object reason) {
+    // Any fast-path cutouts must happen en route to here.
+    new ClientConsensusTask().doAllNodes();
     Log.info("Locking cloud to new members, because "+reason.toString());
     synchronized(Paxos.class) {
       while( !_commonKnowledge )
