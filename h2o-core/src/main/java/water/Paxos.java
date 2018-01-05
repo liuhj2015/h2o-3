@@ -161,7 +161,11 @@ public abstract class Paxos {
   // change cloud shape - the distributed writes will be in the wrong place.
   static void lockCloud(Object reason) {
     if( _cloudLocked ) return; // Fast-path cutout
+    if(H2O.ARGS.client) {
+      new ClientConsensusTask().doAllNodes();
+    }
     lockCloud_impl(reason);
+
   }
 
   /**
@@ -192,9 +196,6 @@ public abstract class Paxos {
 
   static private void lockCloud_impl(Object reason) {
     // Any fast-path cutouts must happen en route to here.
-    if(H2O.ARGS.client) {
-      new ClientConsensusTask().doAllNodes();
-    }
     Log.info("Locking cloud to new members, because "+reason.toString());
     synchronized(Paxos.class) {
       while( !_commonKnowledge )
