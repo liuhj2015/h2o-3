@@ -1,9 +1,9 @@
-def call(final scmEnv, final String mode, final boolean overrideDetectionChange) {
+def call(final scmEnv, final String mode, final boolean ignoreChanges) {
 
   clearStageDirs()
 
   def pipelineContextFactory = load('h2o-3/scripts/jenkins/groovy/pipelineContext.groovy')
-  def final pipelineContext = pipelineContextFactory('h2o-3', mode, scmEnv, overrideDetectionChange)
+  def final pipelineContext = pipelineContextFactory('h2o-3', mode, scmEnv, ignoreChanges)
 
   pipelineContext.getBuildSummary().addDetailsSection(this)
   pipelineContext.getBuildSummary().addChangesSectionIfNecessary(this)

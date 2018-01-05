@@ -1,6 +1,6 @@
-def call(final context, final String mode, final String commitMessage, final List<String> changes, final boolean overrideDetectionChange) {
+def call(final context, final String mode, final String commitMessage, final List<String> changes, final boolean ignoreChanges) {
   def buildConfig = new BuildConfig()
-  buildConfig.initialize(context, mode, commitMessage, changes, overrideDetectionChange)
+  buildConfig.initialize(context, mode, commitMessage, changes, ignoreChanges)
   return buildConfig
 }
 
@@ -40,7 +40,7 @@ class BuildConfig {
   private String mode
   private String nodeLabel
   private String commitMessage
-  private boolean defaultOverrideRerun = false
+  private boolean ignoreRerun = false
   private JenkinsMaster master
   private NodeLabels nodeLabels
   private LinkedHashMap changesMap = [
@@ -51,11 +51,11 @@ class BuildConfig {
     (COMPONENT_ANY): true
   ]
 
-  void initialize(final context, final String mode, final String commitMessage, final List<String> changes, final boolean overrideDetectionChange) {
+  void initialize(final context, final String mode, final String commitMessage, final List<String> changes, final boolean ignoreChanges) {
     this.mode = mode
     this.nodeLabel = nodeLabel
     this.commitMessage = commitMessage
-    if (overrideDetectionChange) {
+    if (ignoreChanges) {
       markAllLangsForTest()
     } else {
       detectChanges(changes)
@@ -68,12 +68,12 @@ class BuildConfig {
     return mode
   }
 
-  def setDefaultOverrideRerun(final boolean defaultOverrideRerun) {
-    this.defaultOverrideRerun = defaultOverrideRerun
+  def setIgnoreRerun(final boolean ignoreRerun) {
+    this.ignoreRerun = ignoreRerun
   }
 
-  boolean getDefaultOverrideRerun() {
-    return this.defaultOverrideRerun
+  boolean getIgnoreRerun() {
+    return this.ignoreRerun
   }
 
   def commitMessageContains(final String keyword) {
@@ -110,7 +110,7 @@ class BuildConfig {
   void setJobProperties(final context, final customProperties) {
     def jobProperties = [
       context.parameters([
-        context.booleanParam(defaultValue: getDefaultOverrideRerun(), description: 'If checked, execute all stages regardless of the commit message content. If not checked and the message contains !rerun, only stages failed in previous build will be executed.', name: 'overrideRerun')
+        context.booleanParam(defaultValue: getIgnoreRerun(), description: 'If checked, execute all stages regardless of the commit message content. If not checked and the message contains !rerun, only stages failed in previous build will be executed.', name: 'ignoreRerun')
       ]),
       context.buildDiscarder(context.logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '25'))
     ]

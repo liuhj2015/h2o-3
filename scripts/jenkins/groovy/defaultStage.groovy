@@ -101,7 +101,7 @@ def runAllStages(final pipelineContext) {
     // if we shouldn't run all stages based on the commit message, check
     // that this is not overridden by environment
     if (!result) {
-      result = env.overrideRerun == null || env.overrideRerun.toLowerCase() == 'true'
+      result = env.ignoreRerun == null || env.ignoreRerun.toLowerCase() == 'true'
     }
     if (result) {
       echo "###### RERUN NOT ENABLED, will execute all stages ######"
