@@ -100,8 +100,8 @@ public abstract class Paxos {
       // Note: this could cause a temporary flood of messages since the other
       // nodes will later inform about the connected client as well.
       // Note: It would be helpful to have a control over flatfile-based multicast to inject a small wait.
-      new H2OClientTask(h2o).doAllNodes();
-      //UDPClientEvent.ClientEvent.Type.CONNECT.broadcast(h2o);
+      //new H2OClientTask(h2o).doAllNodes();
+      UDPClientEvent.ClientEvent.Type.CONNECT.broadcast(h2o);
     } else if (H2O.ARGS.client
                && H2O.isFlatfileEnabled()
                && !H2O.isNodeInFlatfile(h2o)) {
