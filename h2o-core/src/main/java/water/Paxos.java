@@ -183,6 +183,13 @@ public abstract class Paxos {
   }
   static private void lockCloud_impl(Object reason) {
     // Any fast-path cutouts must happen en route to here.
+    if(H2O.ARGS.client){
+      try{
+        Thread.sleep(10000);
+      }catch (InterruptedException e) {
+        // ignore
+      }
+    }
     Log.info("Locking cloud to new members, because "+reason.toString());
     synchronized(Paxos.class) {
       while( !_commonKnowledge )
