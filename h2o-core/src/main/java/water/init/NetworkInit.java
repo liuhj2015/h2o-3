@@ -177,6 +177,11 @@ public class NetworkInit {
       Log.throwErr(e);
     }
     H2O.CLOUD_MULTICAST_PORT = NetworkUtils.getMulticastPort(hash);
+
+    // If I'm client let everybody know about me using broadcast message
+    if(H2O.isFlatfileEnabled() && H2O.ARGS.client) {
+      UDPClientEvent.ClientEvent.Type.CONNECT.broadcast(H2O.SELF);
+    }
   }
 
   /**
@@ -257,26 +262,21 @@ public class NetworkInit {
       // Hideous O(n) algorithm for broadcast - avoid the memory allocation in
       // this method (since it is heavily used)
 
-      if (H2O.isFlatfileEnabled() && H2O.ARGS.client) {
-        // If I'm client let everybody know about me using broadcast message
-        UDPClientEvent.ClientEvent.Type.CONNECT.broadcast(H2O.SELF);
-      } else {
-        HashSet<H2ONode> nodes = H2O.getFlatfile();
-        nodes.addAll(water.Paxos.PROPOSED.values());
-        bb.mark();
-        for (H2ONode h2o : nodes) {
-          if (h2o._removed_from_cloud)
-            continue;
-          try {
-            bb.reset();
-            if (H2O.ARGS.useUDP) {
-              CLOUD_DGRAM.send(bb, h2o._key);
-            } else {
-              h2o.sendMessage(bb, priority);
-            }
-          } catch (IOException e) {
-            Log.warn("Multicast Error to " + h2o, e);
+      HashSet<H2ONode> nodes = H2O.getFlatfile();
+      nodes.addAll(water.Paxos.PROPOSED.values());
+      bb.mark();
+      for( H2ONode h2o : nodes ) {
+        if(h2o._removed_from_cloud)
+          continue;
+        try {
+          bb.reset();
+          if(H2O.ARGS.useUDP) {
+            CLOUD_DGRAM.send(bb, h2o._key);
+          } else {
+            h2o.sendMessage(bb,priority);
           }
+        } catch( IOException e ) {
+          Log.warn("Multicast Error to "+h2o, e);
         }
       }
     }
