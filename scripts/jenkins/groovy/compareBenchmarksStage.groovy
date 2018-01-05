@@ -161,7 +161,7 @@ def failuresToText(final failures, final String joinStr='\n') {
 }
 
 def sendBenchmarksWarningMail(final pipelineContext, final failures) {
-    final def benchmarksSummary = pipelineContext.getBuildSummary().newInstance()
+    final def benchmarksSummary = pipelineContext.getBuildSummary().newInstance(false)
     final def buildSummary = pipelineContext.getBuildSummary()
 
     benchmarksSummary.addSection(this, buildSummary.findSectionOrThrow(buildSummary.DETAILS_SECTION_ID))
@@ -197,7 +197,7 @@ def sendBenchmarksWarningMail(final pipelineContext, final failures) {
     benchmarksSummary.addSection(this, 'warnings', 'Warnings', warningsTable)
 
     // FIXME set proper recipients
-    pipelineContext.getEmailer().sendEmail(this, pipelineContext.getBuildSummary().RESULT_WARNING, pipelineContext.getBuildSummary().getSummaryHTML(this), ['michalr@h2o.ai'])
+    pipelineContext.getEmailer().sendEmail(this, benchmarksSummary.RESULT_WARNING, benchmarksSummary.getSummaryHTML(this), ['michalr@h2o.ai'])
 }
 
 return this

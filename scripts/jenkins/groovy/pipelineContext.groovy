@@ -16,7 +16,7 @@ def call(final String h2o3Root, final String mode, final scmEnv, final boolean i
 
     return new PipelineContext(
             buildConfigFactory(this, mode, env.COMMIT_MESSAGE, getChanges(h2o3Root), ignoreChanges),
-            buildSummaryFactory(),
+            buildSummaryFactory(true),
             pipelineUtilsFactory(),
             emailerFactory()
     )

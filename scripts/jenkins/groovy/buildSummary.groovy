@@ -1,5 +1,5 @@
-def call() {
-    return new BuildSummary()
+def call(final boolean updateJobDescription) {
+    return new BuildSummary(updateJobDescription)
 }
 
 class BuildSummary {
@@ -20,6 +20,15 @@ class BuildSummary {
 
     private final List<Stage> stageSummaries = []
     private final List<Section> sections = []
+    private final updateJobDescription
+
+    BuildSummary(final boolean updateJobDescription) {
+        this.updateJobDescription = updateJobDescription
+    }
+
+    BuildSummary newInstance(final boolean updateJobDescription) {
+        return new BuildSummary(updateJobDescription)
+    }
 
     Section addSection(final context, final String id, final String title, final String contentTemplate) {
         if (findSection(id) != null) {
@@ -27,7 +36,7 @@ class BuildSummary {
         }
         def section = new Section(id, title, contentTemplate)
         sections.add(section)
-        updateJobDescription(context)
+        updateJobDescriptionIfRequired(context)
         return section
     }
 
@@ -36,7 +45,7 @@ class BuildSummary {
             throw new IllegalArgumentException('Section with id %s already.exists'.format(section.getId()))
         }
         sections.add(section)
-        updateJobDescription(context)
+        updateJobDescriptionIfRequired(context)
         return section
     }
 
@@ -94,19 +103,19 @@ class BuildSummary {
         }
         def stage = new Stage(stageName, stageDirName)
         stageSummaries.add(stage)
-        updateJobDescription(context)
+        updateJobDescriptionIfRequired(context)
         return stage
     }
 
     Stage markStageSuccessful(final context, final String stageName) {
         final Stage stage = setStageResult(stageName, RESULT_SUCCESS)
-        updateJobDescription(context)
+        updateJobDescriptionIfRequired(context)
         return stage
     }
 
     Stage markStageFailed(final context, final String stageName) {
         final Stage stage = setStageResult(stageName, RESULT_FAILURE)
-        updateJobDescription(context)
+        updateJobDescriptionIfRequired(context)
         return stage
     }
 
@@ -114,7 +123,7 @@ class BuildSummary {
         def stage = findStageSummaryWithNameOrThrow(stageName)
         stage.setNodeName(nodeName)
         stage.setWorkspace(workspacePath)
-        updateJobDescription(context)
+        updateJobDescriptionIfRequired(context)
         return stage
     }
 
@@ -161,19 +170,17 @@ class BuildSummary {
         }
 
         return """
-            <div style="border: 1px solid #d3d7cf; padding: 0em 1em 1em 1em;">'
+            <div style="border: 1px solid #d3d7cf; padding: 0em 1em 1em 1em;">
                 ${sectionsHTML}
                 ${stagesSection}
             </div>
         """
     }
 
-    BuildSummary newInstance() {
-        return new BuildSummary()
-    }
-
-    private void updateJobDescription(final context) {
-        context.currentBuild.description = getSummaryHTML(context)
+    private void updateJobDescriptionIfRequired(final context) {
+        if (updateJobDescription) {
+            context.currentBuild.description = getSummaryHTML(context)
+        }
     }
 
     private String createHTMLForSection(final String title, final String content, final boolean bottomBorder = true) {
