@@ -175,10 +175,11 @@ public abstract class Paxos {
 
     @Override
     protected void setupLocal() {
-      final H2ONode client = H2O.getClientByIPPort(clientNode.getIpPortString());
+      H2ONode client = H2O.getClientByIPPort(clientNode.getIpPortString());
       while(client == null){
         try {
           Thread.sleep(1000);
+          client = H2O.getClientByIPPort(clientNode.getIpPortString());
         }catch (InterruptedException e){
           // ignore
         }
