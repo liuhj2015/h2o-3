@@ -54,6 +54,8 @@ public class UDPReceiverThread extends Thread {
         }
 
         // Receive a packet & handle it
+        Log.info("Receaving exec in UDP");
+
         basic_packet_handling(new AutoBuffer(sock));
 
       } catch( java.nio.channels.AsynchronousCloseException ex ) {
@@ -111,7 +113,7 @@ public class UDPReceiverThread extends Thread {
     // Filter unknown-packet-reports.  In bad situations of poisoned Paxos
     // voting we can get a LOT of these packets/sec, flooding the logs.
     if( !(UDP.udp.UDPS[ctrl]._paxos || is_member || is_client) ) {
-      Log.info(ab._h2o._heartbeat.toString());
+      Log.info(ab._h2o._heartbeat);
       Log.info(UDP.udp.UDPS[ctrl]._paxos + " " +is_member + " " + is_client);
       _unknown_packets_per_sec++;
       long timediff = ab._h2o._last_heard_from - _unknown_packet_time;

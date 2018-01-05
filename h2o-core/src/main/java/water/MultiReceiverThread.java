@@ -64,6 +64,7 @@ class MultiReceiverThread extends Thread {
           }
           sock.joinGroup(group);
         }
+        Log.info("Receaving exec in MULTIRECEIVER");
 
         // Receive a packet & handle it
         byte[] buf = new byte[AutoBuffer.MTU];
