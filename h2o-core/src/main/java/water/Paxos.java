@@ -162,9 +162,9 @@ public abstract class Paxos {
   static void lockCloud(Object reason) {
     if( _cloudLocked ) return; // Fast-path cutout
     lockCloud_impl(reason);
-    if(H2O.ARGS.client) {
-      new ClientConsensusTask().doAllNodes();
-    }
+    //if(H2O.ARGS.client) {
+    //  new ClientConsensusTask().doAllNodes();
+    //}
 
   }
 
