@@ -14,16 +14,16 @@ def call(final pipelineContext, final stageConfig) {
     //  commit 2 - we add some R changes and we use rerun -> Py stages are skipped, they were successful in previous build
     //           - however, if we had created the empty R stages,
     //             they will be skipped as well, because they are marked as SUCESSFUL in previous build
-    // This is why the stages for not changed langs must NOT be created.
+    // This is why the stages for not changed components must NOT be created.
     // On the other hand, empty stages for those being reran must be created.
     // Otherwise the rerun mechanism will not be able to distinguish if the
     // stage is missing in previous build  because it was skipped due to the
     // change detection (and it should be run in this build) or because it was
     // skipped due to the rerun (and it shouldn't be run in this build either).
 
-    // run stage only if there is something changed for this or relevant lang.
-    if (pipelineContext.getBuildConfig().langChanged(stageConfig.lang)) {
-      echo "###### Changes for ${stageConfig.lang} detected, starting ${stageConfig.stageName} ######"
+    // run stage only if there is something changed for this or relevant component.
+    if (pipelineContext.getBuildConfig().componentChanged(stageConfig.component)) {
+      echo "###### Changes for ${stageConfig.component} detected, starting ${stageConfig.stageName} ######"
       stage(stageConfig.stageName) {
         // run tests only if all stages should be run or if this stage was FAILED in previous build
         if (runAllStages(pipelineContext) || !wasStageSuccessful(stageConfig.stageName)) {
@@ -32,8 +32,8 @@ def call(final pipelineContext, final stageConfig) {
           def h2oFolder = stageConfig.stageDir + '/h2o-3'
 
           // pull the test package unless this is a COMPONENT_ANY stage
-          if (stageConfig.lang != pipelineContext.getBuildConfig().COMPONENT_ANY) {
-            unpackTestPackage(stageConfig.lang, stageConfig.stageDir)
+          if (stageConfig.component != pipelineContext.getBuildConfig().COMPONENT_ANY) {
+            unpackTestPackage(stageConfig.component, stageConfig.stageDir)
           }
           // pull aditional test packages
           for (additionalPackage in stageConfig.additionalTestPackages) {
@@ -41,11 +41,11 @@ def call(final pipelineContext, final stageConfig) {
             unpackTestPackage(additionalPackage, stageConfig.stageDir)
           }
 
-          if (stageConfig.lang == pipelineContext.getBuildConfig().COMPONENT_PY || stageConfig.additionalTestPackages.contains(pipelineContext.getBuildConfig().COMPONENT_PY)) {
+          if (stageConfig.component == pipelineContext.getBuildConfig().COMPONENT_PY || stageConfig.additionalTestPackages.contains(pipelineContext.getBuildConfig().COMPONENT_PY)) {
             installPythonPackage(h2oFolder)
           }
 
-          if (stageConfig.lang == pipelineContext.getBuildConfig().COMPONENT_R || stageConfig.additionalTestPackages.contains(pipelineContext.getBuildConfig().COMPONENT_R)) {
+          if (stageConfig.component == pipelineContext.getBuildConfig().COMPONENT_R || stageConfig.additionalTestPackages.contains(pipelineContext.getBuildConfig().COMPONENT_R)) {
             installRPackage(h2oFolder)
           }
 
@@ -61,7 +61,7 @@ def call(final pipelineContext, final stageConfig) {
         }
       }
     } else {
-      echo "###### Changes for ${stageConfig.lang} NOT detected, skipping ${stageConfig.stageName}. ######"
+      echo "###### Changes for ${stageConfig.component} NOT detected, skipping ${stageConfig.stageName}. ######"
     }
   }
 }
@@ -82,16 +82,16 @@ def installRPackage(String h2o3dir) {
   """
 }
 
-def unpackTestPackage(lang, String stageDir) {
+def unpackTestPackage(component, String stageDir) {
   echo "###### Pulling test package. ######"
   step ([$class: 'CopyArtifact',
     projectName: env.JOB_NAME,
     fingerprintArtifacts: true,
-    filter: "h2o-3/test-package-${lang}.zip, h2o-3/build/h2o.jar",
+    filter: "h2o-3/test-package-${component}.zip, h2o-3/build/h2o.jar",
     selector: [$class: 'SpecificBuildSelector', buildNumber: env.BUILD_ID],
     target: stageDir + '/'
   ])
-  sh "cd ${stageDir}/h2o-3 && unzip -q -o test-package-${lang}.zip && rm test-package-${lang}.zip"
+  sh "cd ${stageDir}/h2o-3 && unzip -q -o test-package-${component}.zip && rm test-package-${component}.zip"
 }
 
 def runAllStages(final pipelineContext) {

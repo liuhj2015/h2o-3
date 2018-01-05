@@ -56,7 +56,7 @@ class BuildConfig {
     this.nodeLabel = nodeLabel
     this.commitMessage = commitMessage
     if (ignoreChanges) {
-      markAllLangsForTest()
+      markAllComponentsForTest()
     } else {
       detectChanges(changes)
     }
@@ -80,8 +80,8 @@ class BuildConfig {
     return commitMessage.contains(keyword)
   }
 
-  def langChanged(final String lang) {
-    return changesMap[lang]
+  def componentChanged(final String component) {
+    return changesMap[component]
   }
 
   JenkinsMaster getMaster() {
@@ -124,8 +124,8 @@ class BuildConfig {
 
   private void detectChanges(List<String> changes) {
     // clear the changes map
-    markAllLangsForSkip()
-    // stages for lang none should be executed always
+    markAllComponentsForSkip()
+    // stages for component none should be executed always
     changesMap[COMPONENT_ANY] = true
 
     for (change in changes) {
@@ -136,20 +136,20 @@ class BuildConfig {
       } else if (change.endsWith('.md')) {
         // no need to run any tests if only .md files are changed
       } else {
-        markAllLangsForTest()
+        markAllComponentsForTest()
       }
     }
   }
 
-  private void markAllLangsForTest() {
+  private void markAllComponentsForTest() {
     changesMap.each { k,v ->
       changesMap[k] = true
     }
   }
 
-  private void markAllLangsForSkip() {
+  private void markAllComponentsForSkip() {
     changesMap.each { k,v ->
-      // mark no changes for all langs except COMPONENT_ANY
+      // mark no changes for all components except COMPONENT_ANY
       changesMap[k] = k == COMPONENT_ANY
     }
   }
