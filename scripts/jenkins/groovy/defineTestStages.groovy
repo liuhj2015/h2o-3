@@ -122,7 +122,7 @@ def call(final pipelineContext) {
       stageName: 'GBM Benchmark', executionScript: 'h2o-3/scripts/jenkins/groovy/benchmarkStage.groovy',
       timeoutValue: 120, target: 'benchmark', lang: pipelineContext.getBuildConfig().LANG_NONE,
       additionalTestPackages: [pipelineContext.getBuildConfig().LANG_R], image: pipelineContext.getBuildConfig().BENCHMARK_IMAGE,
-      nodeLabel: pipelineContext.getBuildConfig().getBenchmarkNodeLabel(), model: 'gbm', makefilePath: pipelineContext.getBuildConfig().BENCHMARK_MAKEFILE_PATH
+      nodeLabel: pipelineContext.getBuildConfig().getBenchmarkNodeLabel(), customData: [model: 'gbm'], makefilePath: pipelineContext.getBuildConfig().BENCHMARK_MAKEFILE_PATH
     ]
   ]
 
@@ -207,7 +207,7 @@ def executeInParallel(final jobs, final pipelineContext) {
           nodeLabel = c['nodeLabel']
           executionScript = c['executionScript']
           image = c['image']
-          model = c['model']
+          customData = c['customData']
           makefilePath = c['makefilePath']
         }
       }
@@ -237,7 +237,7 @@ def invokeStage(final pipelineContext, final body) {
   config.executionScript = config.executionScript ?: DEFAULT_EXECUTION_SCRIPT
   config.image = config.image ?: pipelineContext.getBuildConfig().DEFAULT_IMAGE
   config.makefilePath = config.makefilePath ?: pipelineContext.getBuildConfig().MAKEFILE_PATH
-  config.stageDir = config.stageDir ?: pipelineContext.getUtils().stageNameToDirName(config.stageName)
+  config.stageDir = pipelineContext.getUtils().stageNameToDirName(config.stageName)
 
   pipelineContext.getBuildSummary().addStageSummary(this, config.stageName, config.stageDir)
   withCustomCommitStates(scm, 'h2o-ops-personal-auth-token', "${pipelineContext.getBuildConfig().getGitHubCommitStateContext(config.stageName)}") {

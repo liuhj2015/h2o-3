@@ -6,7 +6,7 @@ def call(final pipelineContext, final stageConfig) {
   def insideDocker = load('h2o-3/scripts/jenkins/groovy/insideDocker.groovy')
 
   String DATASETS_FILE = 'accuracy_datasets_docker.csv'
-  GString TEST_CASES_FILE = "test_cases_${stageConfig.model}.csv"
+  GString TEST_CASES_FILE = "test_cases_${stageConfig.customData.model}.csv"
   GString ML_BENCHMARK_ROOT = "${env.WORKSPACE}/${pipelineContext.getUtils().stageNameToDirName(stageConfig.stageName)}/h2o-3/ml-benchmark"
 
   stageConfig.datasetsPath = stageConfig.datasetsPath ?: "${ML_BENCHMARK_ROOT}/h2oR/${DATASETS_FILE}"
@@ -20,7 +20,7 @@ def call(final pipelineContext, final stageConfig) {
   }
 
   def prepareBenchmarkDirStruct = load("${ML_BENCHMARK_ROOT}/jenkins/groovy/prepareBenchmarkDirStruct.groovy")
-  def benchmarkFolderConfig = prepareBenchmarkDirStruct(stageConfig.model, env.GIT_SHA, env.BRANCH_NAME)
+  def benchmarkFolderConfig = prepareBenchmarkDirStruct(stageConfig.customData.model, env.GIT_SHA, env.BRANCH_NAME)
   GString outputPath = "${env.workspace}/${pipelineContext.getUtils().stageNameToDirName(stageConfig.stageName)}/${benchmarkFolderConfig.getOutputDir()}"
   sh "rm -rf ${outputPath} && mkdir -p ${outputPath}"
 
@@ -30,7 +30,7 @@ def call(final pipelineContext, final stageConfig) {
           "OUTPUT_PATH=${outputPath}",
           "GIT_SHA=${env.GIT_SHA}",
           "GIT_DATE=${env.GIT_DATE.replaceAll(' ', '-')}",
-          "BENCHMARK_MODEL=${stageConfig.model}",
+          "BENCHMARK_MODEL=${stageConfig.customData.model}",
           "BUILD_ID=${env.BUILD_ID}",
   ]
 
