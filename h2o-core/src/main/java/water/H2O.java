@@ -7,6 +7,7 @@ import jsr166y.ForkJoinPool;
 import jsr166y.ForkJoinWorkerThread;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
+import org.eclipse.jetty.util.ConcurrentHashSet;
 import water.UDPRebooted.ShutdownTsk;
 import water.api.RequestServer;
 import water.exceptions.H2OFailException;
@@ -1397,7 +1398,7 @@ final public class H2O {
 
   /* A static list of acceptable Cloud members passed via -flatfile option.
    * It is updated also when a new client appears. */
-  private static HashSet<H2ONode> STATIC_H2OS = null;
+  private static Set<H2ONode> STATIC_H2OS = new ConcurrentHashSet<>();
 
   /* List of all clients that ever connected to this cloud. Keys are IP:PORT of these clients */
   private static Map<String, H2ONode> CLIENTS_MAP = new ConcurrentHashMap<>();
