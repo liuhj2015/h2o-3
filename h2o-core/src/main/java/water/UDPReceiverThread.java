@@ -111,6 +111,7 @@ public class UDPReceiverThread extends Thread {
     // Filter unknown-packet-reports.  In bad situations of poisoned Paxos
     // voting we can get a LOT of these packets/sec, flooding the logs.
     if( !(UDP.udp.UDPS[ctrl]._paxos || is_member || is_client) ) {
+      Log.info(UDP.udp.UDPS[ctrl]._paxos + " " +is_member + " " + is_client);
       _unknown_packets_per_sec++;
       long timediff = ab._h2o._last_heard_from - _unknown_packet_time;
       if( timediff > 1000 ) {

@@ -2033,6 +2033,20 @@ final public class H2O {
     // Start the heartbeat thread, to publish the Clouds' existence to other
     // Clouds. This will typically trigger a round of Paxos voting so we can
     // join an existing Cloud.
+
+    // Here we let know all the nodes in the flatfile about me
+    // if the flatfile does not contain some node, that node will not now about the client
+    // it needs to wait for the propagtion of the information from the rest of the clients
+
+    // On client locking, if I put sleep before locking, all works as expected because then all nodes knows about the client
+    // if client locks the cloud and some nodes still doesn't know about him
+
+    // The problem is that when we have all the nodes in the flatfile and the client tries to lock the cloud, we can continue
+    // and lock the cloud on the rest of the nodes.
+
+    // however if the flatfile does not contain all the nodes, then it needs to be broadcasted from different nodes and this is causing the race
+    // because sometimes the nodes discoveres the information about the client on time, however sometimes the request for locking the cloud comes first.
+    // This is also the case where this node does not know about the client and report the uknown UDP packet
     new HeartBeatThread().start();
 
     long time11 = System.currentTimeMillis();
