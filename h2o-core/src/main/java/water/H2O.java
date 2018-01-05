@@ -2106,6 +2106,7 @@ final public class H2O {
    * @return true if node was already in the multicast list.
    */
   public static boolean addNodeToFlatfile(H2ONode node) {
+    Log.info("Adding " + node + " to flatfile");
     assert isFlatfileEnabled() : "Trying to use flatfile, but flatfile is not enabled!";
     return STATIC_H2OS.add(node);
   }
