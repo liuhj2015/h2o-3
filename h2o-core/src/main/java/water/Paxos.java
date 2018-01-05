@@ -105,7 +105,7 @@ public abstract class Paxos {
       if( _commonKnowledge ) {
         _commonKnowledge = false; // No longer sure about things
         H2O.SELF._heartbeat._common_knowledge = false;
-        Log.debug("Cloud voting in progress");
+        Log.info("Cloud voting in progress");
       }
 
       // Add to proposed set, update cloud hash.  Do not add clients
